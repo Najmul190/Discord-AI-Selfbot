@@ -53,7 +53,7 @@ cd GPT4FreeSelfBot
 
 ### Step 4: Get hugging face Access Tokens from [here](https://huggingface.co/settings/tokens)
 
-## Pick either read or write, it doesn't matter
+- Pick either read or write, it doesn't matter
 
 ![image](https://user-images.githubusercontent.com/91066601/236681615-71600817-774a-430c-8cec-8e6710a82b49.png)
 
