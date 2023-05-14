@@ -84,7 +84,7 @@ Linux:
 
 ### How to talk to the bot
 
-- To activate it in a channel use **~toggleactive #channel** or manually add the channel ID in `channels.txt`
+- To activate it in a channel use **~toggleactive** in the channel or manually add the channel ID in `channels.txt`
 - To see all commands use **~help**
 - Bear in mind that the bot will only respond to **other accounts** and not itself, including any commands.
 - You must also set a trigger word within the `.env`, this is the word that the bot will respond to. For example, if you set the trigger word to `John`, people must say "Hey `John`, how are you today?" for the bot to respond.
