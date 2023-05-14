@@ -38,7 +38,7 @@ git clone https://github.com/najmul190/DiscordGPT4FreeSelfBot
 ### Step 2: Changing directory to cloned directory
 
 ```
-cd GPT4FreeSelfBot
+cd DiscordGPT4FreeSelfBot
 ```
 
 ### Step 3: Getting your Discord token
