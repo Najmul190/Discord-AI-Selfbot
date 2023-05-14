@@ -32,7 +32,7 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
 ### Step 1: Git clone repository
 
 ```
-git clone https://github.com/najmul190/GPT4FreeSelfBot
+git clone https://github.com/najmul190/DiscordGPT4FreeSelfBot
 ```
 
 ### Step 2: Changing directory to cloned directory
