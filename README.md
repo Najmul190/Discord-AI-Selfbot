@@ -45,13 +45,13 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
 ### Step 1: Git clone repository
 
 ```
-git clone https://github.com/najmul190/DiscordGPT4FreeSelfBot
+git clone https://github.com/Najmul190/Discord-AI-Selfbot
 ```
 
 ### Step 2: Changing directory to cloned directory
 
 ```
-cd DiscordGPT4FreeSelfBot
+cd Discord-AI-Selfbot
 ```
 
 ### Step 3: Getting your Discord token
