@@ -1,6 +1,6 @@
 # GPT4FreeSelfBot
 
-This is a [Python](https://www.python.org)-based Discord selfbot using the `discord.py-self` library. The selfbot automatically responds to messages that uses it's name using AI and can provide latency information. It uses the `theb` module from [GPT4FREE](https://github.com/xtekky/gpt4free) to generate responses based on conversation history. It functions as a normal Discord bot, just on a real Discord account, allowing other people to talk to it within DMS, servers and even group chats.
+This is a [Python](https://www.python.org)-based Discord selfbot using the `discord.py-self` library. The selfbot automatically responds to messages that uses it's name using AI and can provide latency information. It uses the [OpenGPT](https://github.com/uesleibros/OpenGPT) module to generate responses based on conversation history. It functions as a normal Discord bot, just on a real Discord account, allowing other people to talk to it within DMS, servers and even group chats.
 
 This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhossin/Discord-Chatbot-Gpt4Free/) by [MishalHossin](https://github.com/mishalhossin/) but was heavily edited by [Najmul190](https://github.com/najmul190) to work as a selfbot rather than a Discord bot.
 
@@ -23,7 +23,20 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
 
 ![image](https://cdn.discordapp.com/attachments/685944147638485062/1107081044219408444/image.png)
 
-## Commands ⚙️
+# Features
+
+- [x] Discord Selfbot: Runs on a genuine Discord account, allowing you to use it without even needing to invite a bot.
+- [x] Free LLM Model: Enjoy the powerful capabilities of this language model without spending a dime.
+- [x] Mention Recognition: The bot always responds when you mention it or say its name. It's as attentive as a squirrel spotting a shiny acorn!
+- [x] Reply Recognition: If replied to, the bot will continue to reply to you. It's like having a conversation with a real person!
+- [x] Message Handling: The bot knows when you're replying to someone else, so it won't cause confusion. It's like having a mind reader in your server; It can also handle numerous messages at once!
+- [x] Channel-Specific Responses: Use the `~toggleactive` command to pick what channel the bot responds in.
+- [x] GPT-3.5-Turbo Model: This bot runs on turbo power! Powered by the lightning-fast GPT-3.5-Turbo language model.
+- [x] Image Detection Model: The bot can detect objects in images using a fancy Hugging Face API.
+- [x] Secure Credential Management: Keep your credentials secure using environment variables.
+- [x] Crafted with Care: Made with lots of love and attention to detail.
+
+## Commands
 
 - For all commands use `~help` in discord
 

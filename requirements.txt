@@ -3,3 +3,5 @@ fake_useragent
 httpx
 asyncio
 python-dotenv
+pyyaml
+requests
