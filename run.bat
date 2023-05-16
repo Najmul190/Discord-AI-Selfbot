@@ -45,6 +45,8 @@ pip install fake_useragent
 pip install httpx
 pip install asyncio
 pip install python-dotenv
+pip install pyyaml
+pip install requests
 echo Installed.
 
 pip install -U discord.py-self
