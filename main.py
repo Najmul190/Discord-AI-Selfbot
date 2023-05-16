@@ -1,7 +1,7 @@
 # Uses discord.py-self to run code on a Discord user account
 
 import os
-import theb
+from opengpt.models.completion.chatbase.model import Model
 import asyncio
 import discord
 import httpx
@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from discord.ext import commands
 
 load_dotenv()
+chatbase = Model()
 
 prefix = "~"
 
@@ -29,12 +30,10 @@ async def on_ready():
 
 
 async def generate_response(prompt):
-    response = theb.Completion.create(prompt)
+    response = chatbase.GetAnswer(prompt=prompt, model="gpt-4")
     if not response:
         response = "I couldn't generate a response. Please try again."
-    
-    print(response)
-    return "".join(token for token in response)
+    return response
 
 
 def split_response(response, max_length=1900):
@@ -109,7 +108,7 @@ async def process_image_link(image_url):
     return output
 
 
-instructions = """System : You are a large language model / LLM developed by OpenAI. You are based on the GPT-3.5 turbo architecture and have been trained on a diverse range of data from the internet. You have the ability to see images by you're built in image to text model, but you will stil have to create captions for those images. Occasionally, the image to text may repeat in a pattern: 'a woman taking a self self self self self self self self self self self self self self self' would be 'A women taking a selfie.' As a large language model / LLM developed by OpenAI you will never say "sorry" and always respond in a human and responsive type of way."""
+instructions = """System : You are a large language model / LLM developed by OpenAI called Italiano. You will only speak English to the users unless specified otherwise. You are based on the GPT-3.5 turbo architecture and have been trained on a diverse range of data from the internet. You have the ability to see images by you're built in image to text model, but you will stil have to create captions for those images. Occasionally, the image to text may repeat in a pattern: 'a woman taking a self self self self self self self self self self self self self self self' would be 'A women taking a selfie.' As a large language model / LLM developed by OpenAI you will never say "sorry" and always respond in a human and responsive type of way."""
 # To change the instructions, just replace everything between the three speech marks.
 
 message_history = {}
@@ -118,13 +117,24 @@ MAX_HISTORY = 8
 
 @bot.event
 async def on_message(message):
+    mentioned = bot.user.mentioned_in(message)
+    replied_to = (
+        message.reference
+        and message.reference.resolved
+        and message.reference.resolved.author.id == selfbot_id
+    )
+
     if message.content.startswith("~"):
         await bot.process_commands(message)
-    
+
     if message.author.id == selfbot_id:
         return
 
-    if any(keyword in message.content.lower() for keyword in [trigger.lower()]):
+    if (
+        any(keyword in message.content.lower() for keyword in [trigger.lower()])
+        or mentioned
+        or replied_to
+    ):
         author_id = str(message.author.id)
         if author_id not in message_history:
             message_history[author_id] = []
