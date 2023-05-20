@@ -6,7 +6,7 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
 
 ### <strong> I take no responsibility for any actions taken against your account for using this bot.</strong>
 
-### <strong>Using this on a user account is prohibited by the [Discord TOS](https://discord.com/terms) and can lead to your account getting banned in rare cases.</strong>
+### <strong>Using this on a user account is prohibited by the [Discord TOS](https://discord.com/terms) and can lead to your account getting banned in very rare cases.</strong>
 
 <p float="left">
   <img style="vertical-align: top;" src="https://discord.c99.nl/widget/theme-4/451627446941515817.png"/>
