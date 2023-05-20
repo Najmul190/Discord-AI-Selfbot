@@ -55,13 +55,13 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
 ### Step 1: Git clone repository
 
 ```
-git clone https://github.com/Najmul190/Discord-AI-Selfbot
+git clone https://github.com/najmul190/DiscordGPT4FreeSelfBot
 ```
 
 ### Step 2: Changing directory to cloned directory
 
 ```
-cd Discord-AI-Selfbot
+cd DiscordGPT4FreeSelfBot
 ```
 
 ### Step 3: Getting your Discord token
@@ -109,6 +109,10 @@ Linux:
 - Run `pip install -r requirements.txt` to install all the dependencies
 - Install discord.py-self using `pip install -U discord.py-self`
 - Run the bot using `python3 main.py`
+
+# How to run on Mobile + Keep online 24/7
+
+# [![Run on repl.it](https://camo.githubusercontent.com/56417b1780ddc0e04d7c9ce2e4041a437a25aeaa898473a75695723e88a9d043/68747470733a2f2f7265706c2d62616467652e6a616a6f6f73616d2e7265706c2e636f2f7472792e706e67)](https://repl.it/github/Najmul190/Discord-AI-Selfbot)
 
 ### How to talk to the bot
 
