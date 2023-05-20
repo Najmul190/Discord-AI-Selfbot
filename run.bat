@@ -47,9 +47,11 @@ pip install asyncio
 pip install python-dotenv
 pip install pyyaml
 pip install requests
-echo Installed.
+pip install pydantic
 
 pip install -U discord.py-self
+
+echo Installed.
 
 echo Starting bot...
  

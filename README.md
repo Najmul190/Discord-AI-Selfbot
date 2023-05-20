@@ -1,6 +1,6 @@
-# GPT4FreeSelfBot
+# Discord-Ai-Selfbot
 
-This is a [Python](https://www.python.org)-based Discord selfbot using the `discord.py-self` library. The selfbot automatically responds to messages that uses it's name using AI and can provide latency information. It uses the [OpenGPT](https://github.com/uesleibros/OpenGPT) module to generate responses based on conversation history. It functions as a normal Discord bot, just on a real Discord account, allowing other people to talk to it within DMS, servers and even group chats.
+This is a [Python](https://www.python.org)-based Discord selfbot using the `discord.py-self` library. The selfbot automatically responds to messages that uses it's name using AI and can provide latency information, along with image generation using DALL-E. It uses the [OpenGPT](https://github.com/uesleibros/OpenGPT) module to generate responses based on conversation history. It functions as a normal Discord bot, just on a real Discord account, allowing other people to talk to it within DMS, servers and even group chats.
 
 This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhossin/Discord-Chatbot-Gpt4Free/) by [MishalHossin](https://github.com/mishalhossin/) but was heavily edited by [Najmul190](https://github.com/najmul190) to work as a selfbot rather than a Discord bot.
 
@@ -36,9 +36,19 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
 - [x] Secure Credential Management: Keep your credentials secure using environment variables.
 - [x] Crafted with Care: Made with lots of love and attention to detail.
 
+# Preview of Image Generation:
+
+![image](https://cdn.discordapp.com/attachments/691684867271950336/1109469317986267146/image.png)
+
 ## Commands
 
-- For all commands use `~help` in discord
+- ~pfp [image_url] - Change the bot's profile picture
+- ~wipe - Clears history of the bot
+- ~ping - Shows the bot's latency
+- ~toggleactive [channel] - Toggle the current channel to the list of active channels
+- ~toggledm - Toggle if the bot should be active in DM's or not
+- ~ignore [user] - Ignore a user from using the bot
+- ~imagine [prompt] - Generate an image from a prompt
 
 # Steps to install and run:
 
@@ -86,12 +96,17 @@ Windows:
 
 - Simply open `run.bat` if you're on Windows. This will install all pre-requisites and run the bot as well.
 
+- If `run.bat` doesn't work, then run `cd the\bot\files\directory` to change directory to the bot files directory
+- Create a virtual environment by running `python -m venv bot-env`
+- Activate the virtual environment by running `bot-env\Scripts\activate.bat`
+- Run `pip install -r requirements.txt` to install all the dependencies
+
 Linux:
 
-- If you're on Linux, run `pip install -r requirements.txt` to install all the dependencies
-- Then run `cd the\bot\files\directory` to change directory to the bot files directory
+- If you're on Linux, then run `cd the\bot\files\directory` to change directory to the bot files directory
 - Create a virtual environment by running `python3 -m venv bot-env`
-- Activate virtual environment by running `source bot-env/bin/activate`
+- Activate the virtual environment by running `source bot-env/bin/activate`
+- Run `pip install -r requirements.txt` to install all the dependencies
 - Install discord.py-self using `pip install -U discord.py-self`
 - Run the bot using `python3 main.py`
 

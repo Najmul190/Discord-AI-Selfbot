@@ -5,3 +5,4 @@ asyncio
 python-dotenv
 pyyaml
 requests
+pydantic

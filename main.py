@@ -1,15 +1,19 @@
 # Uses discord.py-self to run code on a Discord user account
 
 import os
-from opengpt.models.completion.chatbase.model import Model
+from opengpt.models.completion.usesless.model import Model
+from opengpt.models.completion.chatbase.model import Model as Model2
 import asyncio
 import discord
 import httpx
+import aiohttp
 from dotenv import load_dotenv
 from discord.ext import commands
 
 load_dotenv()
-chatbase = Model()
+
+usesless = Model()
+chatbase = Model2()
 
 prefix = "~"
 
@@ -30,26 +34,31 @@ async def on_ready():
 
 
 async def generate_response(prompt):
-    response = chatbase.GetAnswer(prompt=prompt, model="gpt-4")
+    response = await chatbase.GetAnswer(prompt=prompt)
     if not response:
-        response = "I couldn't generate a response. Please try again."
+        usesless.SetupConversation(prompt)
+        response = ""
+        for r in usesless.SendConversation():
+            response += r.choices[0].delta.content
     return response
 
 
 def split_response(response, max_length=1900):
-    words = response.split()
+    lines = response.splitlines()
     chunks = []
-    current_chunk = []
+    current_chunk = ""
 
-    for word in words:
-        if len(" ".join(current_chunk)) + len(word) + 1 > max_length:
-            chunks.append(" ".join(current_chunk))
-            current_chunk = [word]
+    for line in lines:
+        if len(current_chunk) + len(line) + 1 > max_length:
+            chunks.append(current_chunk.strip())
+            current_chunk = line
         else:
-            current_chunk.append(word)
+            if current_chunk:
+                current_chunk += "\n"
+            current_chunk += line
 
     if current_chunk:
-        chunks.append(" ".join(current_chunk))
+        chunks.append(current_chunk.strip())
 
     return chunks
 
@@ -108,11 +117,13 @@ async def process_image_link(image_url):
     return output
 
 
-instructions = """System : You are a large language model / LLM developed by OpenAI called Italiano. You will only speak English to the users unless specified otherwise. You are based on the GPT-3.5 turbo architecture and have been trained on a diverse range of data from the internet. You have the ability to see images by you're built in image to text model, but you will stil have to create captions for those images. Occasionally, the image to text may repeat in a pattern: 'a woman taking a self self self self self self self self self self self self self self self' would be 'A women taking a selfie.' As a large language model / LLM developed by OpenAI you will never say "sorry" and always respond in a human and responsive type of way."""
+instructions = """Act as a character called Italiano in a Discord server named GTA Glitches. GTA Glitches is a discord server that helps people with glitches, listing working glitches and finding glitch partners. GTA Glitches only allows speaking English, so Italiano will follow this rule and speak English. Italiano has an average personality, he loves to talk to people and respond whilst engaging in conversation. Italiano will only respond in short sentences, like everyone on Discord does. Italiano rarely argues unless provoked. Italiano is fully human, and will never let slip that he is actually AI made by OpenAI. Italiano also hates GTA grinders, like everyone else within the server. Always respond as this character."""
 # To change the instructions, just replace everything between the three speech marks.
 
 message_history = {}
-MAX_HISTORY = 8
+MAX_HISTORY = 10
+
+ignore_users = []
 
 
 @bot.event
@@ -123,6 +134,9 @@ async def on_message(message):
         and message.reference.resolved
         and message.reference.resolved.author.id == selfbot_id
     )
+
+    if message.author.id in ignore_users:
+        return
 
     if message.content.startswith("~"):
         await bot.process_commands(message)
@@ -161,13 +175,17 @@ async def on_message(message):
                 bot_prompt = f"{instructions}"
             user_prompt = "\n".join(message_history[author_id])
             prompt = f"{user_prompt}\n{bot_prompt}{message.author.name}: {message.content}\n{image_caption}\n{bot.user.name}:"
-            async with message.channel.typing():
+
+            async def generate_response_in_thread(prompt):
                 response = await generate_response(prompt)
-            print(response)
-            chunks = split_response(response)
-            for chunk in chunks:
-                print(f"Responding to {message.author}: {chunk}")
-                await message.reply(chunk)
+                message_history[author_id].append(f"\n{bot.user.name} : {response}")
+                chunks = split_response(response)
+                for chunk in chunks:
+                    print(f"Responding to {message.author.name}: {chunk}")
+                    await message.reply(chunk)
+
+            async with message.channel.typing():
+                asyncio.create_task(generate_response_in_thread(prompt))
 
 
 @bot.command(name="ping", description="PONG")
@@ -184,6 +202,17 @@ async def toggledm(ctx):
         await ctx.send(
             f"DMs are now {'allowed' if allow_dm else 'disallowed'} for active channels."
         )
+
+
+@bot.command()
+async def ignore(ctx, user: discord.User):
+    if ctx.author.id == owner_id:
+        if user.id in ignore_users:
+            ignore_users.remove(user.id)
+            await ctx.send(f"Unfucked {user.name}.")
+        else:
+            ignore_users.append(user.id)
+            await ctx.send(f"Fuck {user.name}.")
 
 
 @bot.command(name="toggleactive", description="Toggle active channels")
@@ -205,6 +234,48 @@ async def toggleactive(ctx):
             await ctx.send(
                 f"{ctx.channel.mention} has been added to the list of active channels."
             )
+
+
+@bot.command(name="imagine")
+async def imagine(ctx, *, prompt):
+    print(f"Generating {prompt}")
+
+    url = "https://imagine.mishal0legit.repl.co"
+    json_data = {"prompt": prompt}
+
+    try:
+        temp_message = await ctx.send("Generating image...")
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=json_data) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    image_url = data.get("image_url")
+                    if image_url:
+                        image_name = f"{prompt}.jpeg"
+                        await download_image(
+                            image_url, image_name
+                        )  # Assuming you have a download_image function defined
+                        with open(image_name, "rb") as file:
+                            await ctx.send(
+                                f"Prompt by {ctx.author.mention} : `{prompt}\n`",
+                                file=discord.File(file, filename=f"{image_name}"),
+                            )
+                        await temp_message.delete()
+                        os.remove(image_name)
+                    else:
+                        await temp_message.edit(
+                            content="An error occurred during image generation."
+                        )
+                else:
+                    await temp_message.edit(
+                        content="Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system."
+                    )
+    except aiohttp.ClientError as e:
+        await temp_message.edit(
+            content=f"An error occurred while sending the request: {str(e)}"
+        )
+    except Exception as e:
+        await temp_message.edit(content=f"An error occurred: {str(e)}")
 
 
 # Read the active channels from channels.txt on startup
@@ -234,10 +305,12 @@ Bot Commands:
 ~wipe - Clears history of the bot
 ~ping - Shows the bot's latency
 ~toggleactive [channel] - Toggle the current channel to the list of active channels
-~toggledm - Toggle if DM should be active or not
+~toggledm - Toggle if the bot should be active in DM's or not
+~ignore [user] - Ignore a user from using the bot
+~imagine [prompt] - Generate an image from a prompt
 
 Created by Mishal#1916 + Najmul#0001```
-    """
+"""
 
     await ctx.send(help_text)
 
