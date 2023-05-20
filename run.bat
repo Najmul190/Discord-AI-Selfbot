@@ -45,9 +45,10 @@ pip install fake_useragent
 pip install httpx
 pip install asyncio
 pip install python-dotenv
-pip install pyyaml
+pip install pyYAML
 pip install requests
 pip install pydantic
+pip install flask
 
 pip install -U discord.py-self
 

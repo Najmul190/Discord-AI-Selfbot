@@ -1,8 +1,9 @@
 curl_cffi
 fake_useragent
 httpx
+flask
 asyncio
 python-dotenv
-pyyaml
+pyYAML
 requests
 pydantic
