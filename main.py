@@ -7,6 +7,7 @@ import asyncio
 import discord
 import httpx
 import aiohttp
+from keep_alive import keep_alive
 from dotenv import load_dotenv
 from discord.ext import commands
 
@@ -180,6 +181,12 @@ async def on_message(message):
                 response = await generate_response(prompt)
                 message_history[author_id].append(f"\n{bot.user.name} : {response}")
                 chunks = split_response(response)
+
+                if '{"message":"API rate limit exceeded for ip:' in response:
+                    print("API rate limit exceeded for ip, wait a few seconds.")
+                    await message.reply("sorry i'm a bit tired, try again later.")
+                    return
+
                 for chunk in chunks:
                     print(f"Responding to {message.author.name}: {chunk}")
                     await message.reply(chunk)
@@ -314,5 +321,7 @@ Created by Mishal#1916 + Najmul#0001```
 
     await ctx.send(help_text)
 
+
+keep_alive()
 
 bot.run(TOKEN)
