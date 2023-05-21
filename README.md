@@ -34,7 +34,6 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
 - [x] Psychoanalysis Command: Use the `~analyse` command to analyse a mentioned user's messages and find insights on their personality. It's like having a therapist in your server!
 - [x] GPT-3.5-Turbo Model: This bot runs on turbo power! Powered by the lightning-fast GPT-3.5-Turbo language model.
 - [x] Image Detection Model: The bot can detect objects in images using a fancy Hugging Face API.
-- [x]
 - [x] Secure Credential Management: Keep your credentials secure using environment variables.
 - [x] Crafted with Care: Made with lots of love and attention to detail.
 
