@@ -31,8 +31,10 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
 - [x] Reply Recognition: If replied to, the bot will continue to reply to you. It's like having a conversation with a real person!
 - [x] Message Handling: The bot knows when you're replying to someone else, so it won't cause confusion. It's like having a mind reader in your server; It can also handle numerous messages at once!
 - [x] Channel-Specific Responses: Use the `~toggleactive` command to pick what channel the bot responds in.
+- [x] Psychoanalysis Command: Use the `~analyse` command to analyse a mentioned user's messages and find insights on their personality. It's like having a therapist in your server!
 - [x] GPT-3.5-Turbo Model: This bot runs on turbo power! Powered by the lightning-fast GPT-3.5-Turbo language model.
 - [x] Image Detection Model: The bot can detect objects in images using a fancy Hugging Face API.
+- [x]
 - [x] Secure Credential Management: Keep your credentials secure using environment variables.
 - [x] Crafted with Care: Made with lots of love and attention to detail.
 
@@ -112,9 +114,12 @@ Linux:
 
 # How to run on Mobile + Keep online 24/7
 
-# [![Run on repl.it](https://camo.githubusercontent.com/56417b1780ddc0e04d7c9ce2e4041a437a25aeaa898473a75695723e88a9d043/68747470733a2f2f7265706c2d62616467652e6a616a6f6f73616d2e7265706c2e636f2f7472792e706e67)](https://repl.it/github/Najmul190/Discord-AI-Selfbot)
+[![Run on repl.it](https://camo.githubusercontent.com/56417b1780ddc0e04d7c9ce2e4041a437a25aeaa898473a75695723e88a9d043/68747470733a2f2f7265706c2d62616467652e6a616a6f6f73616d2e7265706c2e636f2f7472792e706e67)](https://repl.it/github/Najmul190/Discord-AI-Selfbot)
 
-### How to talk to the bot
+- Click on the button above to create an account and run the bot on repl.it
+- will update once i figure it out
+
+# How to talk to the bot
 
 - To activate it in a channel use **~toggleactive** in the channel or manually add the channel ID in `channels.txt`
 - To see all commands use **~help**
