@@ -283,13 +283,10 @@ async def toggleactive(ctx):
 
 @bot.command(name="imagine")
 async def imagine(ctx, *, prompt):
-    print(f"Generating {prompt}")
-
     url = "https://imagine.mishal0legit.repl.co/image"
     json_data = {"prompt": prompt}
-
     try:
-        temp_message = await ctx.send("Generating image...")
+        temp_message = await ctx.send("Generating image avg: 6 seconds")
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=json_data) as response:
                 if response.status == 200:
@@ -297,15 +294,13 @@ async def imagine(ctx, *, prompt):
                     image_url = data.get("image_url")
                     if image_url:
                         image_name = f"{prompt}.jpeg"
-                        await download_image(
-                            image_url, image_name
-                        )  # Assuming you have a download_image function defined
+                        await download_image(image_url, image_name)
                         with open(image_name, "rb") as file:
                             await ctx.send(
-                                f"Prompt by {ctx.author.mention} : `{prompt}\n`",
+                                f"Prompt by {ctx.author.mention}: `{prompt}`",
                                 file=discord.File(file, filename=f"{image_name}"),
                             )
-                        await temp_message.delete()
+                        await temp_message.edit(content="Finished Image Generation")
                         os.remove(image_name)
                     else:
                         await temp_message.edit(
