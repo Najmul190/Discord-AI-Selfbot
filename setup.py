@@ -6,7 +6,7 @@ import os
 os.system("pip uninstall discord -y")
 os.system("pip uninstall discord.py -y")
 os.system("pip install -r requirements.txt")
-os.system("pip install -U discord.py-self -y")
+os.system("pip install -U discord.py-self")
 
 # run main.py
 
