@@ -2,7 +2,7 @@
 
 This is a [Python](https://www.python.org)-based Discord selfbot using the `discord.py-self` library. The selfbot automatically responds to messages that uses it's name using AI and can provide latency information, along with image generation using DALL-E. It uses the [OpenGPT](https://github.com/uesleibros/OpenGPT) module to generate responses based on conversation history. It functions as a normal Discord bot, just on a real Discord account, allowing other people to talk to it within DMS, servers and even group chats.
 
-This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhossin/Discord-Chatbot-Gpt4Free/) by [MishalHossin](https://github.com/mishalhossin/) but was heavily edited by [Najmul190](https://github.com/najmul190) to work as a selfbot rather than a Discord bot.
+This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Discord-Chatbot-Gpt4Free/) by [MishalHossin](https://github.com/mishalhossin/) but was heavily edited by [Najmul190](https://github.com/najmul190) to work as a selfbot rather than a Discord bot.
 
 ### <strong> I take no responsibility for any actions taken against your account for using this bot.</strong>
 
@@ -13,8 +13,6 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
   <img src="https://lanyard.cnrad.dev/api/1025245410224263258?theme=dark&bg=171515&borderRadius=5px&animated=true&idleMessage=15%20year%20old%20solo%20dev" al/> 
 </p>
 
----
-
 # Preview of image responses:
 
 ![image](https://user-images.githubusercontent.com/91066601/236717834-e3f6939f-3641-425c-b9f7-424a38f86ac4.png)
@@ -22,6 +20,10 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
 # Preview of text responses:
 
 ![image](https://cdn.discordapp.com/attachments/685944147638485062/1107081044219408444/image.png)
+
+# Preview of Image Generation:
+
+![image](https://cdn.discordapp.com/attachments/691684867271950336/1109469317986267146/image.png)
 
 # Features
 
@@ -34,12 +36,9 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
 - [x] Psychoanalysis Command: Use the `~analyse` command to analyse a mentioned user's messages and find insights on their personality. It's like having a therapist in your server!
 - [x] GPT-3.5-Turbo Model: This bot runs on turbo power! Powered by the lightning-fast GPT-3.5-Turbo language model.
 - [x] Image Detection Model: The bot can detect objects in images using a fancy Hugging Face API.
+- [x]
 - [x] Secure Credential Management: Keep your credentials secure using environment variables.
 - [x] Crafted with Care: Made with lots of love and attention to detail.
-
-# Preview of Image Generation:
-
-![image](https://cdn.discordapp.com/attachments/691684867271950336/1109469317986267146/image.png)
 
 ## Commands
 
@@ -48,17 +47,16 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
 - ~ping - Shows the bot's latency
 - ~toggleactive [channel] - Toggle the current channel to the list of active channels
 - ~toggledm - Toggle if the bot should be active in DM's or not
-- ~ignore @user - Ignore a user from using the bot
+- ~ignore [user] - Ignore a user from using the bot
 - ~imagine [prompt] - Generate an image from a prompt
 - ~analyze @user - Analyze a user's messages to provide a personality profile
-
 
 # Steps to install and run:
 
 ### Step 1: Git clone repository
 
 ```
-git clone https://github.com/najmul190/DiscordGPT4FreeSelfBot
+git clone https://github.com/najmul190/Discord-AI-Selfbot
 ```
 
 ### Step 2: Changing directory to cloned directory
@@ -118,7 +116,23 @@ Linux:
 [![Run on repl.it](https://camo.githubusercontent.com/56417b1780ddc0e04d7c9ce2e4041a437a25aeaa898473a75695723e88a9d043/68747470733a2f2f7265706c2d62616467652e6a616a6f6f73616d2e7265706c2e636f2f7472792e706e67)](https://repl.it/github/Najmul190/Discord-AI-Selfbot)
 
 - Click on the button above to create an account and run the bot on repl.it
-- will update once i figure it out
+- Click on `Import from GitHub` (can be public or private)
+  ![image](https://media.discordapp.net/attachments/918997350238797855/1109812776857255996/image.png?width=651&height=321)
+- Do Step 3 and 4 from above to get the information
+- Add the following as a secret each, along with the corresponding value: (trigger value should not be in quotes)
+
+```
+HUGGING_FACE_API
+DISCORD_TOKEN
+OWNER_ID
+SELFBOT_ID
+TRIGGER
+```
+
+![image](https://cdn.discordapp.com/attachments/918997350238797855/1109822401715388506/image.png)
+
+- Then click on the `Run` button, which will start to install all dependencies and then run your selfbot.
+- Start talking to your new friend!
 
 # How to talk to the bot
 
