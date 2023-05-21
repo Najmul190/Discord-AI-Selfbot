@@ -51,6 +51,8 @@ This bot was originally [Discord-Chatbot-Gpt4Free](https://github.com/mishalhoss
 - ~toggledm - Toggle if the bot should be active in DM's or not
 - ~ignore [user] - Ignore a user from using the bot
 - ~imagine [prompt] - Generate an image from a prompt
+- ~analyze @user - Analyze a user's messages to provide a personality profile
+
 
 # Steps to install and run:
 
