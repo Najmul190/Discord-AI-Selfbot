@@ -47,7 +47,7 @@ This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Dis
 - ~ping - Shows the bot's latency
 - ~toggleactive [channel] - Toggle the current channel to the list of active channels
 - ~toggledm - Toggle if the bot should be active in DM's or not
-- ~ignore [user] - Ignore a user from using the bot
+- ~ignore @user - Ignore a user from using the bot
 - ~imagine [prompt] - Generate an image from a prompt
 - ~analyze @user - Analyze a user's messages to provide a personality profile
 
