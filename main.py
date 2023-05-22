@@ -7,6 +7,9 @@ import asyncio
 import discord
 import httpx
 import aiohttp
+import random
+import urllib.parse
+import aiofiles
 from keep_alive import keep_alive
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -282,40 +285,41 @@ async def toggleactive(ctx):
 
 
 @bot.command(name="imagine")
-async def imagine(ctx, *, prompt):
-    url = "https://imagine.mishal0legit.repl.co/image"
-    json_data = {"prompt": prompt}
-    try:
-        temp_message = await ctx.send("Generating image avg: 6 seconds")
+async def imagine(ctx, *, prompt: str):
+    encoded_prompt = urllib.parse.quote(prompt)
+    images = []
+
+    temp_message = await ctx.send("Generating images...")
+    i = 0
+    while len(images) < 4:
+        seed = random.randint(1, 100000)  # Generate a random seed
+        image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}{seed}"
+
         async with aiohttp.ClientSession() as session:
-            async with session.post(url, json=json_data) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    image_url = data.get("image_url")
-                    if image_url:
-                        image_name = f"{prompt}.jpeg"
-                        await download_image(image_url, image_name)
-                        with open(image_name, "rb") as file:
-                            await ctx.send(
-                                f"Prompt by {ctx.author.mention}: `{prompt}`",
-                                file=discord.File(file, filename=f"{image_name}"),
-                            )
-                        await temp_message.edit(content="Finished Image Generation")
-                        os.remove(image_name)
-                    else:
-                        await temp_message.edit(
-                            content="An error occurred during image generation."
-                        )
-                else:
-                    await temp_message.edit(
-                        content="Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system."
-                    )
-    except aiohttp.ClientError as e:
-        await temp_message.edit(
-            content=f"An error occurred while sending the request: {str(e)}"
-        )
-    except Exception as e:
-        await temp_message.edit(content=f"An error occurred: {str(e)}")
+            async with session.get(image_url) as response:
+                try:
+                    image_data = await response.read()
+                    filename = f"{ctx.author.id}_{ctx.message.id}_{i}.png"
+
+                    async with aiofiles.open(filename, "wb") as f:
+                        await f.write(image_data)
+
+                    images.append(filename)
+                    i += 1
+                except (aiohttp.ClientError, ValueError, KeyError) as e:
+                    print(f"Error generating image: {e}")
+
+    await temp_message.edit(
+        content=f"Finished Image Generation for {ctx.author.mention} with prompt: `{prompt}`"
+    )
+
+    if images:
+        image_files = [discord.File(image) for image in images]
+        await ctx.send(files=image_files)
+        for image in image_files:
+            os.remove(image.filename)
+    else:
+        await ctx.send("Error generating images. Please try again later.")
 
 
 # Read the active channels from channels.txt on startup
