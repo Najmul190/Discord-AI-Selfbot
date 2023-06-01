@@ -1,6 +1,6 @@
 # Discord-AI-Selfbot
 
-This is a [Python](https://www.python.org)-based Discord selfbot using the `discord.py-self` library. The selfbot automatically responds to messages that uses it's name using AI and can provide latency information, along with image generation using DALL-E. It uses the [OpenGPT](https://github.com/uesleibros/OpenGPT) module to generate responses based on conversation history. It functions as a normal Discord bot, just on a real Discord account, allowing other people to talk to it within DMS, servers and even group chats.
+This is a [Python](https://www.python.org)-based Discord selfbot using the `discord.py-self` library. The selfbot automatically responds to messages that uses it's name using AI and can provide latency information, along with image generation using DALL-E. It uses the [OpenGPT](https://github.com/uesleibros/OpenGPT) module to generate responses based on conversation history. It functions as a normal Discord bot, just on a real Discord account, allowing other people to talk to it within DMs, servers and even group chats.
 
 This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Discord-Chatbot-Gpt4Free/) by [MishalHossin](https://github.com/mishalhossin/) but was heavily edited by [Najmul190](https://github.com/najmul190) to work as a selfbot rather than a Discord bot.
 
