@@ -1,27 +1,27 @@
 # Uses discord.py-self to run code on a Discord user account
 
 import os
-from opengpt.models.completion.usesless.model import Model
-from opengpt.models.completion.chatbase.model import Model as Model2
 import asyncio
 import discord
 import httpx
+import uuid
+import string
 import aiohttp
 import random
 import urllib.parse
 import aiofiles
+
+from imaginepy import AsyncImagine, Style, Ratio
 from keep_alive import keep_alive
 from dotenv import load_dotenv
 from discord.ext import commands
+from model import aiassist
 
 load_dotenv()
 
-usesless = Model()
-chatbase = Model2()
-
 prefix = "~"
 
-owner_id = int(os.getenv("OWNER_ID"))
+owner_id = int(os.getenv("OWNER_ID", 0))
 selfbot_id = int(os.getenv("SELFBOT_ID"))
 trigger = os.getenv("TRIGGER")
 
@@ -38,13 +38,10 @@ async def on_ready():
 
 
 async def generate_response(prompt):
-    response = await chatbase.GetAnswer(prompt=prompt)
-    if not response:
-        usesless.SetupConversation(prompt)
-        response = ""
-        for r in usesless.SendConversation():
-            response += r.choices[0].delta.content
-    return response
+    response = await aiassist.Completion.create(prompt=prompt)
+    if not response["text"]:
+        return "I couldn't generate a response right now. It could be due to technical issues, limitations in my training data, or the complexity of the query."
+    return response["text"]
 
 
 def split_response(response, max_length=1900):
@@ -70,10 +67,7 @@ def split_response(response, max_length=1900):
 api_key = os.environ["HUGGING_FACE_API"]
 
 API_URLS = [
-    "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large",
-    "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base",
-    "https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning",
-    "https://api-inference.huggingface.co/models/ydshieh/vit-gpt2-coco-en",
+    "https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning"
 ]
 headers = {"Authorization": f"Bearer {api_key}"}
 
@@ -89,39 +83,66 @@ async def fetch_response(client, api_url, data):
     return response.json()
 
 
+async def generate_image(image_prompt, style_value, ratio_value, negative):
+    imagine = AsyncImagine()
+    filename = str(uuid.uuid4()) + ".png"
+    style_enum = Style[style_value]
+    ratio_enum = Ratio[ratio_value]
+    img_data = await imagine.sdprem(
+        prompt=image_prompt,
+        style=style_enum,
+        ratio=ratio_enum,
+        priority="1",
+        high_res_results="1",
+        steps="70",
+        negative=negative,
+    )
+    try:
+        with open(filename, mode="wb") as img_file:
+            img_file.write(img_data)
+    except Exception as e:
+        print(f"An error occurred while writing the image to file: {e}")
+        return None
+
+    await imagine.close()
+
+    return filename
+
+
 async def query(filename):
     with open(filename, "rb") as f:
         data = f.read()
 
-    async with httpx.AsyncClient() as client:
+    async with aiohttp.ClientSession() as client:
         tasks = [fetch_response(client, api_url, data) for api_url in API_URLS]
-        responses = []
-        for task in asyncio.as_completed(tasks):
-            try:
-                response = await task
-            except Exception as e:
-                response = str(e)
-            responses.append(response)
+        responses = await asyncio.gather(*tasks, return_exceptions=True)
 
     return responses
 
 
 async def download_image(image_url, save_as):
-    async with httpx.AsyncClient() as client:
-        response = await client.get(image_url)
-    with open(save_as, "wb") as f:
-        f.write(response.content)
+    async with aiohttp.ClientSession() as session:
+        async with session.get(image_url) as response:
+            with open(save_as, "wb") as f:
+                while True:
+                    chunk = await response.content.read(1024)
+                    if not chunk:
+                        break
+                    f.write(chunk)
+    await session.close()
 
 
 async def process_image_link(image_url):
-    temp_image = "temp_image.jpg"
+    image_type = image_url.split(".")[-1]
+    image_type = image_type.rsplit(".", 1)[0]
+    temp_image = f"{str(uuid.uuid4())}.{image_type}"
     await download_image(image_url, temp_image)
     output = await query(temp_image)
     os.remove(temp_image)
     return output
 
 
-instructions = """Act as a character called Italiano in a Discord server named GTA Glitches. GTA Glitches is a discord server that helps people with glitches, listing working glitches and finding glitch partners. GTA Glitches only allows speaking English, so Italiano will follow this rule and speak English. Italiano has an average personality, he loves to talk to people and respond whilst engaging in conversation. Italiano will only respond in short sentences, like everyone on Discord does. Italiano rarely argues unless provoked. Italiano is fully human, and will never let slip that he is actually AI made by OpenAI. Italiano also hates GTA grinders, like everyone else within the server. Always respond as this character and never state Italiano: at the beginning of the sentence."""
+instructions = """Act as a character called Italiano in a Discord server named GTA Glitches. GTA Glitches is a discord server that helps people with glitches, listing working glitches and finding glitch partners. GTA Glitches only allows speaking English, so Italiano will follow this rule and speak English. Italiano has an average personality, he loves to talk to people and respond whilst engaging in conversation. Italiano will only respond in short sentences, like everyone on Discord does. Italiano rarely argues unless provoked. Italiano is fully human, and will never let slip that he is actually AI made by OpenAI. Italiano also hates GTA grinders, like everyone else within the server. If asked where or how to find glitches, always tell the user <#743245805921763398> which leads to the working glitches channel. Within this channel, only working glitches are posted so if a glitch isn't there its most likely patched. Always respond as this character and never state Italiano: at the beginning of the sentence."""
 # To change the instructions, just replace everything between the three speech marks.
 
 message_history = {}
@@ -257,10 +278,10 @@ async def ignore(ctx, user: discord.User):
     if ctx.author.id == owner_id:
         if user.id in ignore_users:
             ignore_users.remove(user.id)
-            await ctx.send(f"Frick {user.name}.")
+            await ctx.send(f"Unignored {user.name}.")
         else:
             ignore_users.append(user.id)
-            await ctx.send(f"Unfricked {user.name}.")
+            await ctx.send(f"Ignoring {user.name}.")
 
 
 @bot.command(name="toggleactive", description="Toggle active channels")
@@ -284,42 +305,108 @@ async def toggleactive(ctx):
             )
 
 
-@bot.command(name="imagine")
-async def imagine(ctx, *, prompt: str):
-    encoded_prompt = urllib.parse.quote(prompt)
-    images = []
+@bot.command()
+async def imagine(ctx, *, args: str):
+    args = args.replace("“", '"').replace(
+        "”", '"'
+    )  # iphones use fancy quotation marks for some reason
 
-    temp_message = await ctx.send("Generating images...")
-    i = 0
-    while len(images) < 4:
-        seed = random.randint(1, 100000)  # Generate a random seed
-        image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}{seed}"
+    arguments = args.split('"')
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(image_url) as response:
-                try:
-                    image_data = await response.read()
-                    filename = f"{ctx.author.id}_{ctx.message.id}_{i}.png"
+    if len(arguments) < 2:
+        await ctx.reply(
+            'Error: Arguments must be enclosed in quotation marks. For example: `~imagine "the game fortnite" "anime"`'
+        )
+        return
 
-                    async with aiofiles.open(filename, "wb") as f:
-                        await f.write(image_data)
+    prompt = arguments[1]
+    style = arguments[3].lower()
 
-                    images.append(filename)
-                    i += 1
-                except (aiohttp.ClientError, ValueError, KeyError) as e:
-                    print(f"Error generating image: {e}")
+    ratios = ["RATIO_1X1", "RATIO_4X3", "RATIO_16X9", "RATIO_3X2"]
+    ratio = random.choice(ratios)
 
-    await temp_message.edit(
-        content=f"Finished Image Generation for {ctx.author.mention} with prompt: `{prompt}`"
+    if style == "anime":
+        style = "ANIME_V2"
+    elif style == "disney":
+        style = "DISNEY"
+    elif style == "realistic" or style == "realism":
+        style = "REALISTIC"
+    elif style == "studio ghibli":
+        style = "STUDIO_GHIBLI"
+    elif style == "graffiti":
+        style = "GRAFFITI"
+    elif style == "medieval":
+        style = "MEDIEVAL"
+    elif style == "fantasy":
+        style = "FANTASY"
+    elif style == "neon":
+        style = "NEON"
+    elif style == "cyberpunk":
+        style = "CYBERPUNK"
+    elif style == "landscape":
+        style = "LANDSCAPE"
+    elif style == "japanese":
+        style = "JAPANESE_ART"
+    elif style == "steampunk":
+        style = "STEAMPUNK"
+    elif style == "sketch":
+        style = "SKETCH"
+    elif style == "comic book":
+        style = "COMIC_BOOK"
+    elif style == "v4 creative":
+        style = "V4_CREATIVE"
+    elif style == "imagine v3":
+        style = "IMAGINE_V3"
+    elif style == "comic":
+        style = "COMIC_V2"
+    elif style == "logo":
+        style = "LOGO"
+    elif style == "pixel art":
+        style = "PIXEL_ART"
+    elif style == "interior":
+        style = "INTERIOR"
+    elif style == "mystical":
+        style = "MYSTICAL"
+    elif (
+        style == "super realistic"
+        or style == "super realism"
+        or style == "superrealism"
+        or style == "surrealism"
+        or style == "surreal"
+        or style == "surrealistic"
+    ):
+        style = "SURREALISM"
+    elif style == "minecraft":
+        style = "MINECRAFT"
+    elif style == "dystopian":
+        style = "DYSTOPIAN"
+    else:
+        await ctx.send(
+            "Invalid style! S   tyles: `realistic`, anime`, `disney`, `studio ghibli`, `graffiti`, `medieval`, `fantasy`, `neon`, `cyberpunk`, `landscape`, `japanese`, `steampunk`, `sketch`, `comic book`, `v4 creative`, `imagine v3`, `logo`, `pixel art`, `interior`, `mystical`, `surrealistic`, `minecraft`, `dystopian`."
+        )
+        return
+
+    temp_message = await ctx.send("Generating image...")
+
+    filename = await generate_image(prompt, style, ratio, None)
+
+    file = discord.File(filename, filename="image.png")
+
+    await temp_message.delete()
+
+    await ctx.send(
+        content=f"Generated image for {ctx.author.mention} with prompt `{prompt}` in the style of `{style}`:",
+        file=file,
     )
 
-    if images:
-        image_files = [discord.File(image) for image in images]
-        await ctx.send(files=image_files)
-        for image in image_files:
-            os.remove(image.filename)
-    else:
-        await ctx.send("Error generating images. Please try again later.")
+    os.remove(filename)
+
+
+@bot.command()
+async def styles(ctx):
+    await ctx.send(
+        "Possible styles: `anime`, `disney`, `studio ghibli`, `graffiti`, `medieval`, `fantasy`, `neon`, `cyberpunk`, `landscape`, `japanese`, `steampunk`, `sketch`, `comic book`, `v4 creative`, `imagine v3`, `logo`, `pixel art`, `interior`, `mystical`, `surrealistic`, `minecraft`, `dystopian`."
+    )
 
 
 # Read the active channels from channels.txt on startup
@@ -352,6 +439,7 @@ Bot Commands:
 ~toggledm - Toggle if the bot should be active in DM's or not
 ~ignore [user] - Ignore a user from using the bot
 ~imagine [prompt] - Generate an image from a prompt
+~styles - Get a list of all possible styles for the ~imagine command
 ~analyze @user - Analyze a user's messages to provide a personality profile
 
 Created by Mishal#1916 + Najmul#0001```

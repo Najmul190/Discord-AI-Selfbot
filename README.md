@@ -23,7 +23,7 @@ This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Dis
 
 # Preview of Image Generation:
 
-![image](https://cdn.discordapp.com/attachments/691684867271950336/1109469317986267146/image.png)
+![image](https://media.discordapp.net/attachments/715284506289897513/1113931350039343104/image.png?width=748&height=391)
 
 # Features
 
@@ -48,7 +48,8 @@ This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Dis
 - ~toggleactive [channel] - Toggle the current channel to the list of active channels
 - ~toggledm - Toggle if the bot should be active in DM's or not
 - ~ignore @user - Ignore a user from using the bot
-- ~imagine [prompt] - Generate an image from a prompt
+- ~imagine [prompt] [style] - Generate an image from a prompt
+- ~styles - List all the styles available for image generation
 - ~analyze @user - Analyze a user's messages to provide a personality profile
 
 # Steps to install and run:
