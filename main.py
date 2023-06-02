@@ -67,20 +67,20 @@ def split_response(response, max_length=1900):
 api_key = os.environ["HUGGING_FACE_API"]
 
 API_URLS = [
-    "https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning"
+    "https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning",
 ]
 headers = {"Authorization": f"Bearer {api_key}"}
 
 
 async def fetch_response(client, api_url, data):
-    response = await client.post(api_url, headers=headers, data=data, timeout=30)
+    headers = {"Content-Type": "application/json"}
+    async with client.post(api_url, headers=headers, data=data, timeout=10) as response:
+        if response.status != 200:
+            raise Exception(
+                f"API request failed with status code {response.status}: {await response.text()}"
+            )
 
-    if response.status_code != 200:
-        raise Exception(
-            f"API request failed with status code {response.status_code}: {response.text}"
-        )
-
-    return response.json()
+        return await response.json()
 
 
 async def generate_image(image_prompt, style_value, ratio_value, negative):
@@ -190,12 +190,14 @@ async def on_message(message):
                     ):
                         caption = await process_image_link(attachment.url)
                         has_image = True
-                        image_caption = f"\n[System : First note that some large image to text models will take time to load and may give out a timeout error but use the fallback models or the one that works.This how the caption is ranked 1st is main 2nd is secondary and 3rd is fallback model which  will gives worst caption one some cases. 1st and 2nd model sometimes takes a while to load so it can result in a error ignore that pls. Here is the image captions for the image user has sent :{caption}"
+                        image_caption = (
+                            f"User has sent a image with the caption: {caption}"
+                        )
                         print(caption)
                     break
 
             if has_image:
-                bot_prompt = f"{instructions}\n[System : Image context will be provided, generate an caption with a response for it. Don't mention about how image contexts are acquired, and don't mention about the chance hierachy."
+                bot_prompt = f"{instructions}\n[System: Image context provided. This is an image-to-text model with two classifications: OCR for text detection and general image detection, which may be unstable. Generate a caption with an appropriate response. For instance, if the OCR detects a math question, answer it; if it's a general image, compliment its beauty.]"
             else:
                 bot_prompt = f"{instructions}"
             user_prompt = "\n".join(message_history[author_id])
