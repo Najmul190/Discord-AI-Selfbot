@@ -306,87 +306,60 @@ async def toggleactive(ctx):
                 f"{ctx.channel.mention} has been added to the list of active channels."
             )
 
+style_mapping = {
+    "anime": "ANIME_V2",
+    "disney": "DISNEY",
+    "realistic": "REALISTIC",
+    "realism": "REALISTIC",
+    "studio ghibli": "STUDIO_GHIBLI",
+    "graffiti": "GRAFFITI",
+    "medieval": "MEDIEVAL",
+    "fantasy": "FANTASY",
+    "neon": "NEON",
+    "cyberpunk": "CYBERPUNK",
+    "landscape": "LANDSCAPE",
+    "japanese": "JAPANESE_ART",
+    "steampunk": "STEAMPUNK",
+    "sketch": "SKETCH",
+    "comic book": "COMIC_BOOK",
+    "v4 creative": "V4_CREATIVE",
+    "imagine v3": "IMAGINE_V3",
+    "comic": "COMIC_V2",
+    "logo": "LOGO",
+    "pixel art": "PIXEL_ART",
+    "interior": "INTERIOR",
+    "mystical": "MYSTICAL",
+    "super realistic": "SURREALISM",
+    "super realism": "SURREALISM",
+    "superrealism": "SURREALISM",
+    "surrealism": "SURREALISM",
+    "surreal": "SURREALISM",
+    "surrealistic": "SURREALISM",
+    "minecraft": "MINECRAFT",
+    "dystopian": "DYSTOPIAN"
+}
 
 @bot.command()
 async def imagine(ctx, *, args: str):
-    args = args.replace("“", '"').replace(
-        "”", '"'
-    )  # iphones use fancy quotation marks for some reason
+    args = args.replace("“", '"').replace("”", '"')
 
     arguments = args.split('"')
 
-    if len(arguments) < 2:
-        await ctx.reply(
-            'Error: Arguments must be enclosed in quotation marks. For example: `~imagine "the game fortnite" "anime"`'
-        )
+    if len(arguments) < 4:
+        await ctx.reply('Error: Arguments must be enclosed in quotation marks. For example: `~imagine "the game fortnite" "anime"`')
         return
 
     prompt = arguments[1]
     style = arguments[3].lower()
 
+    if style not in style_mapping:
+        await ctx.send("Invalid style! Styles: `realistic`, `anime`, `disney`, `studio ghibli`, `graffiti`, `medieval`, `fantasy`, `neon`, `cyberpunk`, `landscape`, `japanese`, `steampunk`, `sketch`, `comic book`, `v4 creative`, `imagine v3`, `logo`, `pixel art`, `interior`, `mystical`, `surrealistic`, `minecraft`, `dystopian`.")
+        return
+
     ratios = ["RATIO_1X1", "RATIO_4X3", "RATIO_16X9", "RATIO_3X2"]
     ratio = random.choice(ratios)
 
-    if style == "anime":
-        style = "ANIME_V2"
-    elif style == "disney":
-        style = "DISNEY"
-    elif style == "realistic" or style == "realism":
-        style = "REALISTIC"
-    elif style == "studio ghibli":
-        style = "STUDIO_GHIBLI"
-    elif style == "graffiti":
-        style = "GRAFFITI"
-    elif style == "medieval":
-        style = "MEDIEVAL"
-    elif style == "fantasy":
-        style = "FANTASY"
-    elif style == "neon":
-        style = "NEON"
-    elif style == "cyberpunk":
-        style = "CYBERPUNK"
-    elif style == "landscape":
-        style = "LANDSCAPE"
-    elif style == "japanese":
-        style = "JAPANESE_ART"
-    elif style == "steampunk":
-        style = "STEAMPUNK"
-    elif style == "sketch":
-        style = "SKETCH"
-    elif style == "comic book":
-        style = "COMIC_BOOK"
-    elif style == "v4 creative":
-        style = "V4_CREATIVE"
-    elif style == "imagine v3":
-        style = "IMAGINE_V3"
-    elif style == "comic":
-        style = "COMIC_V2"
-    elif style == "logo":
-        style = "LOGO"
-    elif style == "pixel art":
-        style = "PIXEL_ART"
-    elif style == "interior":
-        style = "INTERIOR"
-    elif style == "mystical":
-        style = "MYSTICAL"
-    elif (
-        style == "super realistic"
-        or style == "super realism"
-        or style == "superrealism"
-        or style == "surrealism"
-        or style == "surreal"
-        or style == "surrealistic"
-    ):
-        style = "SURREALISM"
-    elif style == "minecraft":
-        style = "MINECRAFT"
-    elif style == "dystopian":
-        style = "DYSTOPIAN"
-    else:
-        await ctx.send(
-            "Invalid style! S   tyles: `realistic`, anime`, `disney`, `studio ghibli`, `graffiti`, `medieval`, `fantasy`, `neon`, `cyberpunk`, `landscape`, `japanese`, `steampunk`, `sketch`, `comic book`, `v4 creative`, `imagine v3`, `logo`, `pixel art`, `interior`, `mystical`, `surrealistic`, `minecraft`, `dystopian`."
-        )
-        return
+    style = style_mapping[style]
 
     temp_message = await ctx.send("Generating image...")
 
@@ -396,11 +369,8 @@ async def imagine(ctx, *, args: str):
 
     await temp_message.delete()
 
-    await ctx.send(
-        content=f"Generated image for {ctx.author.mention} with prompt `{prompt}` in the style of `{style}`:",
-        file=file,
-    )
-
+    await ctx.send(content=f"Generated image for {ctx.author.mention} with prompt `{prompt}` in the style of `{style}`:", file=file)
+    
     os.remove(filename)
 
 
