@@ -8,6 +8,7 @@ import uuid
 import string
 import aiohttp
 import random
+import time
 import urllib.parse
 import aiofiles
 
@@ -180,6 +181,9 @@ async def on_message(message):
         message_history[author_id].append(message.content)
         message_history[author_id] = message_history[author_id][-MAX_HISTORY:]
 
+        if time.time() - message.author.created_at.timestamp() < 2592000:
+            return
+
         if message.channel.id in active_channels:
             has_image = False
             image_caption = ""
@@ -214,6 +218,9 @@ async def on_message(message):
                     return
 
                 for chunk in chunks:
+                    chunk = chunk.replace("@everyone", "@ntbozo").replace(
+                        "@here", "@notgonnahappen"
+                    )
                     print(f"Responding to {message.author.name}: {chunk}")
                     await message.reply(chunk)
 
@@ -306,6 +313,7 @@ async def toggleactive(ctx):
                 f"{ctx.channel.mention} has been added to the list of active channels."
             )
 
+
 style_mapping = {
     "anime": "ANIME_V2",
     "disney": "DISNEY",
@@ -336,8 +344,9 @@ style_mapping = {
     "surreal": "SURREALISM",
     "surrealistic": "SURREALISM",
     "minecraft": "MINECRAFT",
-    "dystopian": "DYSTOPIAN"
+    "dystopian": "DYSTOPIAN",
 }
+
 
 @bot.command()
 async def imagine(ctx, *, args: str):
@@ -346,14 +355,18 @@ async def imagine(ctx, *, args: str):
     arguments = args.split('"')
 
     if len(arguments) < 4:
-        await ctx.reply('Error: Arguments must be enclosed in quotation marks. For example: `~imagine "the game fortnite" "anime"`')
+        await ctx.reply(
+            'Error: Arguments must be enclosed in quotation marks. For example: `~imagine "the game fortnite" "anime"`'
+        )
         return
 
     prompt = arguments[1]
     style = arguments[3].lower()
 
     if style not in style_mapping:
-        await ctx.send("Invalid style! Styles: `realistic`, `anime`, `disney`, `studio ghibli`, `graffiti`, `medieval`, `fantasy`, `neon`, `cyberpunk`, `landscape`, `japanese`, `steampunk`, `sketch`, `comic book`, `v4 creative`, `imagine v3`, `logo`, `pixel art`, `interior`, `mystical`, `surrealistic`, `minecraft`, `dystopian`.")
+        await ctx.send(
+            "Invalid style! Styles: `realistic`, `anime`, `disney`, `studio ghibli`, `graffiti`, `medieval`, `fantasy`, `neon`, `cyberpunk`, `landscape`, `japanese`, `steampunk`, `sketch`, `comic book`, `v4 creative`, `imagine v3`, `logo`, `pixel art`, `interior`, `mystical`, `surrealistic`, `minecraft`, `dystopian`."
+        )
         return
 
     ratios = ["RATIO_1X1", "RATIO_4X3", "RATIO_16X9", "RATIO_3X2"]
@@ -369,8 +382,11 @@ async def imagine(ctx, *, args: str):
 
     await temp_message.delete()
 
-    await ctx.send(content=f"Generated image for {ctx.author.mention} with prompt `{prompt}` in the style of `{style}`:", file=file)
-    
+    await ctx.send(
+        content=f"Generated image for {ctx.author.mention} with prompt `{prompt}` in the style of `{style}`:",
+        file=file,
+    )
+
     os.remove(filename)
 
 

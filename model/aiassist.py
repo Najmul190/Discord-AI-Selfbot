@@ -1,5 +1,6 @@
-import aiohttp
 import json
+
+import aiohttp
 
 
 class Completion:
@@ -8,8 +9,8 @@ class Completion:
         systemMessage: str = "You are a helpful assistant",
         prompt: str = "",
         parentMessageId: str = "",
-        temperature: float = 0.8,
-        top_p: float = 1,
+        temperature: float = 0.7,
+        top_p: float = 0.9,
     ):
         json_data = {
             "prompt": prompt,
@@ -30,6 +31,9 @@ class Completion:
     @classmethod
     def __load_json(cls, content) -> dict:
         decode_content = str(content.decode("utf-8"))
-        split = decode_content.rsplit("\n", 1)[1]
-        to_json = json.loads(split)
-        return to_json
+        split = decode_content.rsplit("\n", 1)
+        if len(split) > 1:
+            to_json = json.loads(split[1])
+            return to_json
+        else:
+            return {}
