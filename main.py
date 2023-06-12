@@ -16,7 +16,6 @@ from imaginepy import AsyncImagine, Style, Ratio
 from keep_alive import keep_alive
 from dotenv import load_dotenv
 from discord.ext import commands
-from model import aiassist
 
 load_dotenv()
 
@@ -39,10 +38,21 @@ async def on_ready():
 
 
 async def generate_response(prompt):
-    response = await aiassist.Completion.create(prompt=prompt)
-    if not response["text"]:
-        return "I couldn't generate a response right now. It could be due to technical issues, limitations in my training data, or the complexity of the query."
-    return response["text"]
+    endpoint = "https://gpt4.gravityengine.cc/api/openai/v1/engines/text-davinci-003/completions"
+
+    headers = {
+        "Content-Type": "application/json",
+    }
+
+    data = {"prompt": prompt, "max_tokens": 800, "temperature": 0.8}
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(endpoint, headers=headers, json=data) as response:
+                response_data = await response.json()
+                return response_data["choices"][0]["text"]
+    except aiohttp.ClientError as error:
+        print("Error making the request:", error)
 
 
 def split_response(response, max_length=1900):
@@ -68,6 +78,7 @@ def split_response(response, max_length=1900):
 api_key = os.environ["HUGGING_FACE_API"]
 
 API_URLS = [
+    "https://api-inference.huggingface.co/models/microsoft/trocr-base-printed",
     "https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning",
 ]
 headers = {"Authorization": f"Bearer {api_key}"}
@@ -75,7 +86,7 @@ headers = {"Authorization": f"Bearer {api_key}"}
 
 async def fetch_response(client, api_url, data):
     headers = {"Content-Type": "application/json"}
-    async with client.post(api_url, headers=headers, data=data, timeout=10) as response:
+    async with client.post(api_url, headers=headers, data=data, timeout=40) as response:
         if response.status != 200:
             raise Exception(
                 f"API request failed with status code {response.status}: {await response.text()}"
@@ -143,7 +154,7 @@ async def process_image_link(image_url):
     return output
 
 
-instructions = """Act as a character called Italiano in a Discord server named GTA Glitches. GTA Glitches is a discord server that helps people with glitches, listing working glitches and finding glitch partners. GTA Glitches only allows speaking English, so Italiano will follow this rule and speak English. Italiano has an average personality, he loves to talk to people and respond whilst engaging in conversation. Italiano will only respond in short sentences, like everyone on Discord does. Italiano rarely argues unless provoked. Italiano is fully human, and will never let slip that he is actually AI made by OpenAI. Italiano also hates GTA grinders, like everyone else within the server. If asked where or how to find glitches, always tell the user <#743245805921763398> which leads to the working glitches channel. Within this channel, only working glitches are posted so if a glitch isn't there its most likely patched. Always respond as this character and never state Italiano: at the beginning of the sentence."""
+instructions = """Act as a character called Italiano in a Discord server named GTA Glitches. GTA Glitches is a discord server that helps people with glitches, listing working glitches and finding glitch partners. GTA Glitches only allows speaking English, so Italiano will follow this rule and speak English. Italiano has an average personality, he loves to talk to people and respond whilst engaging in conversation. Italiano will only respond in short sentences, like everyone on Discord does. Italiano rarely argues unless provoked. Italiano is fully human, and will never let slip that he is actually AI made by OpenAI. Italiano also hates GTA grinders, like everyone else within the server. If asked where or how to find glitches, always tell the user <#743245805921763398> which leads to the working glitches channel. Within this channel, only working glitches are posted so if a glitch isn't there its most likely patched. Always respond as this character in English, and never state Italiano: at the beginning of the sentence. Remember to speak English too."""
 # To change the instructions, just replace everything between the three speech marks.
 
 message_history = {}
