@@ -37,20 +37,29 @@ async def on_ready():
     print(f"{bot.user.name} has connected to Discord!")
 
 
-async def generate_response(prompt):
-    endpoint = "https://gpt4.gravityengine.cc/api/openai/v1/engines/text-davinci-003/completions"
+async def generate_response(instructions, history):
+    endpoint = "https://gpt4.gravityengine.cc/api/openai/v1/chat/completions"
 
     headers = {
         "Content-Type": "application/json",
     }
 
-    data = {"prompt": prompt, "max_tokens": 800, "temperature": 0.8}
+    data = {
+        "model": "gpt-3.5-turbo-16k-0613",
+        "temperature": 0.75,
+        "messages": [
+            {"role": "system", "content": instructions},
+            *history,
+        ],
+    }
 
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post(endpoint, headers=headers, json=data) as response:
                 response_data = await response.json()
-                return response_data["choices"][0]["text"]
+                choices = response_data["choices"]
+                if choices:
+                    return choices[0]["message"]["content"]
     except aiohttp.ClientError as error:
         print("Error making the request:", error)
 
@@ -158,7 +167,7 @@ instructions = """Act as a character called Italiano in a Discord server named G
 # To change the instructions, just replace everything between the three speech marks.
 
 message_history = {}
-MAX_HISTORY = 8
+MAX_HISTORY = 20
 
 ignore_users = []
 
@@ -178,7 +187,7 @@ async def on_message(message):
     if message.content.startswith("~"):
         await bot.process_commands(message)
 
-    if message.author.id == selfbot_id:
+    if message.author.id == selfbot_id or message.author.bot:
         return
 
     if (
@@ -186,6 +195,12 @@ async def on_message(message):
         or mentioned
         or replied_to
     ):
+        if message.mentions:
+            for mention in message.mentions:
+                message.content = message.content.replace(
+                    f"<@{mention.id}>", f"@{mention.display_name}"
+                )
+
         author_id = str(message.author.id)
         if author_id not in message_history:
             message_history[author_id] = []
@@ -198,6 +213,15 @@ async def on_message(message):
         if message.channel.id in active_channels:
             has_image = False
             image_caption = ""
+
+            channel_id = message.channel.id
+            key = f"{message.author.id}-{channel_id}"
+
+            if key not in message_history:
+                message_history[key] = []
+
+            message_history[key] = message_history[key][-MAX_HISTORY:]
+
             if message.attachments:
                 for attachment in message.attachments:
                     if attachment.filename.lower().endswith(
@@ -218,9 +242,13 @@ async def on_message(message):
             user_prompt = "\n".join(message_history[author_id])
             prompt = f"{user_prompt}\n{bot_prompt}{message.author.name}: {message.content}\n{image_caption}\n{bot.user.name}:"
 
+            history = message_history[key]
+
+            message_history[key].append({"role": "user", "content": message.content})
+
             async def generate_response_in_thread(prompt):
-                response = await generate_response(prompt)
-                message_history[author_id].append(f"\n{bot.user.name} : {response}")
+                response = await generate_response(prompt, history)
+
                 chunks = split_response(response)
 
                 if '{"message":"API rate limit exceeded for ip:' in response:
@@ -234,6 +262,8 @@ async def on_message(message):
                     )
                     print(f"Responding to {message.author.name}: {chunk}")
                     await message.reply(chunk)
+
+                message_history[key].append({"role": "assistant", "content": response})
 
             async with message.channel.typing():
                 asyncio.create_task(generate_response_in_thread(prompt))
