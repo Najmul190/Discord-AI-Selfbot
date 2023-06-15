@@ -37,25 +37,41 @@ async def on_ready():
     print(f"{bot.user.name} has connected to Discord!")
 
 
-async def generate_response(instructions, history):
+async def generate_response(instructions, history=None):
+    if history is None:
+        data = {
+            "model": "gpt-3.5-turbo-16k-0613",
+            "temperature": 0.75,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": instructions
+                },
+            ],
+        }
+    else:
+        data = {
+            "model": "gpt-3.5-turbo-16k-0613",
+            "temperature": 0.75,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": instructions
+                },
+                *history,
+            ],
+        }
+
     endpoint = "https://gpt4.gravityengine.cc/api/openai/v1/chat/completions"
 
     headers = {
         "Content-Type": "application/json",
     }
 
-    data = {
-        "model": "gpt-3.5-turbo-16k-0613",
-        "temperature": 0.75,
-        "messages": [
-            {"role": "system", "content": instructions},
-            *history,
-        ],
-    }
-
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.post(endpoint, headers=headers, json=data) as response:
+            async with session.post(endpoint, headers=headers,
+                                    json=data) as response:
                 response_data = await response.json()
                 choices = response_data["choices"]
                 if choices:
@@ -95,7 +111,8 @@ headers = {"Authorization": f"Bearer {api_key}"}
 
 async def fetch_response(client, api_url, data):
     headers = {"Content-Type": "application/json"}
-    async with client.post(api_url, headers=headers, data=data, timeout=40) as response:
+    async with client.post(api_url, headers=headers, data=data,
+                           timeout=40) as response:
         if response.status != 200:
             raise Exception(
                 f"API request failed with status code {response.status}: {await response.text()}"
@@ -175,11 +192,8 @@ ignore_users = []
 @bot.event
 async def on_message(message):
     mentioned = bot.user.mentioned_in(message)
-    replied_to = (
-        message.reference
-        and message.reference.resolved
-        and message.reference.resolved.author.id == selfbot_id
-    )
+    replied_to = (message.reference and message.reference.resolved
+                  and message.reference.resolved.author.id == selfbot_id)
 
     if message.author.id in ignore_users:
         return
@@ -190,16 +204,12 @@ async def on_message(message):
     if message.author.id == selfbot_id or message.author.bot:
         return
 
-    if (
-        any(keyword in message.content.lower() for keyword in [trigger.lower()])
-        or mentioned
-        or replied_to
-    ):
+    if (any(keyword in message.content.lower()
+            for keyword in [trigger.lower()]) or mentioned or replied_to):
         if message.mentions:
             for mention in message.mentions:
                 message.content = message.content.replace(
-                    f"<@{mention.id}>", f"@{mention.display_name}"
-                )
+                    f"<@{mention.id}>", f"@{mention.display_name}")
 
         author_id = str(message.author.id)
         if author_id not in message_history:
@@ -225,8 +235,7 @@ async def on_message(message):
             if message.attachments:
                 for attachment in message.attachments:
                     if attachment.filename.lower().endswith(
-                        (".png", ".jpg", ".jpeg", ".gif", ".bmp", "webp")
-                    ):
+                        (".png", ".jpg", ".jpeg", ".gif", ".bmp", "webp")):
                         caption = await process_image_link(attachment.url)
                         has_image = True
                         image_caption = (
@@ -244,7 +253,10 @@ async def on_message(message):
 
             history = message_history[key]
 
-            message_history[key].append({"role": "user", "content": message.content})
+            message_history[key].append({
+                "role": "user",
+                "content": message.content
+            })
 
             async def generate_response_in_thread(prompt):
                 response = await generate_response(prompt, history)
@@ -252,18 +264,22 @@ async def on_message(message):
                 chunks = split_response(response)
 
                 if '{"message":"API rate limit exceeded for ip:' in response:
-                    print("API rate limit exceeded for ip, wait a few seconds.")
-                    await message.reply("sorry i'm a bit tired, try again later.")
+                    print(
+                        "API rate limit exceeded for ip, wait a few seconds.")
+                    await message.reply(
+                        "sorry i'm a bit tired, try again later.")
                     return
 
                 for chunk in chunks:
                     chunk = chunk.replace("@everyone", "@ntbozo").replace(
-                        "@here", "@notgonnahappen"
-                    )
+                        "@here", "@notgonnahappen")
                     print(f"Responding to {message.author.name}: {chunk}")
                     await message.reply(chunk)
 
-                message_history[key].append({"role": "assistant", "content": response})
+                message_history[key].append({
+                    "role": "assistant",
+                    "content": response
+                })
 
             async with message.channel.typing():
                 asyncio.create_task(generate_response_in_thread(prompt))
@@ -275,8 +291,7 @@ async def analyse(ctx, user: discord.User):
 
     message_history = []
     async for message in ctx.channel.history(
-        limit=1500
-    ):  # easiest way i could think of + fairly fast
+            limit=1500):  # easiest way i could think of + fairly fast
         if message.author == user:
             message_history.append(message.content)
 
@@ -288,10 +303,10 @@ async def analyse(ctx, user: discord.User):
     user_prompt = "\n".join(message_history)
     prompt = f"{prompt}{user_prompt}"
 
-    print(prompt)
+    history = None
 
     async def generate_response_in_thread(prompt):
-        response = await generate_response(prompt)
+        response = await generate_response(prompt, history)
         chunks = split_response(response)
 
         if '{"message":"API rate limit exceeded for ip:' in response:
@@ -424,7 +439,8 @@ async def imagine(ctx, *, args: str):
     await temp_message.delete()
 
     await ctx.send(
-        content=f"Generated image for {ctx.author.mention} with prompt `{prompt}` in the style of `{style}`:",
+        content=
+        f"Generated image for {ctx.author.mention} with prompt `{prompt}` in the style of `{style}`:",
         file=file,
     )
 
