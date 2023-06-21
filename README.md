@@ -102,7 +102,9 @@ Windows:
 - Create a virtual environment by running `python -m venv bot-env`
 - Activate the virtual environment by running `bot-env\Scripts\activate.bat`
 - Run `pip install -r requirements.txt` to install all the dependencies
-
+- Install discord.py-self using `pip install -U discord.py-self`
+- Run the bot using `python3 main.py`
+  
 Linux:
 
 - If you're on Linux, then run `cd the\bot\files\directory` to change directory to the bot files directory
