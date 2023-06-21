@@ -114,7 +114,7 @@ Linux:
 
 # How to run on Mobile + Keep online 24/7
 
-[![Run on repl.it](https://camo.githubusercontent.com/56417b1780ddc0e04d7c9ce2e4041a437a25aeaa898473a75695723e88a9d043/68747470733a2f2f7265706c2d62616467652e6a616a6f6f73616d2e7265706c2e636f2f7472792e706e67)](https://repl.it/github/Najmul190/Discord-AI-Selfbot)
+[![Run on repl.it](https://media.discordapp.net/attachments/1119017121960185916/1121144333047967904/image.png)](https://repl.it/github/Najmul190/Discord-AI-Selfbot)
 
 - Click on the button above to create an account and run the bot on repl.it
 - Click on `Import from GitHub` (can be public or private)
