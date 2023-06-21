@@ -43,10 +43,7 @@ async def generate_response(instructions, history=None):
             "model": "gpt-3.5-turbo-16k-0613",
             "temperature": 0.75,
             "messages": [
-                {
-                    "role": "system",
-                    "content": instructions
-                },
+                {"role": "system", "content": instructions},
             ],
         }
     else:
@@ -54,10 +51,7 @@ async def generate_response(instructions, history=None):
             "model": "gpt-3.5-turbo-16k-0613",
             "temperature": 0.75,
             "messages": [
-                {
-                    "role": "system",
-                    "content": instructions
-                },
+                {"role": "system", "content": instructions},
                 *history,
             ],
         }
@@ -70,8 +64,7 @@ async def generate_response(instructions, history=None):
 
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.post(endpoint, headers=headers,
-                                    json=data) as response:
+            async with session.post(endpoint, headers=headers, json=data) as response:
                 response_data = await response.json()
                 choices = response_data["choices"]
                 if choices:
@@ -111,8 +104,7 @@ headers = {"Authorization": f"Bearer {api_key}"}
 
 async def fetch_response(client, api_url, data):
     headers = {"Content-Type": "application/json"}
-    async with client.post(api_url, headers=headers, data=data,
-                           timeout=40) as response:
+    async with client.post(api_url, headers=headers, data=data, timeout=40) as response:
         if response.status != 200:
             raise Exception(
                 f"API request failed with status code {response.status}: {await response.text()}"
@@ -192,8 +184,13 @@ ignore_users = []
 @bot.event
 async def on_message(message):
     mentioned = bot.user.mentioned_in(message)
-    replied_to = (message.reference and message.reference.resolved
-                  and message.reference.resolved.author.id == selfbot_id)
+    replied_to = (
+        message.reference
+        and message.reference.resolved
+        and message.reference.resolved.author.id == selfbot_id
+    )
+
+    is_dm = isinstance(message.channel, discord.DMChannel)
 
     if message.author.id in ignore_users:
         return
@@ -204,12 +201,17 @@ async def on_message(message):
     if message.author.id == selfbot_id or message.author.bot:
         return
 
-    if (any(keyword in message.content.lower()
-            for keyword in [trigger.lower()]) or mentioned or replied_to):
+    if (
+        any(keyword in message.content.lower() for keyword in [trigger.lower()])
+        or mentioned
+        or replied_to
+        or is_dm
+    ):
         if message.mentions:
             for mention in message.mentions:
                 message.content = message.content.replace(
-                    f"<@{mention.id}>", f"@{mention.display_name}")
+                    f"<@{mention.id}>", f"@{mention.display_name}"
+                )
 
         author_id = str(message.author.id)
         if author_id not in message_history:
@@ -235,7 +237,8 @@ async def on_message(message):
             if message.attachments:
                 for attachment in message.attachments:
                     if attachment.filename.lower().endswith(
-                        (".png", ".jpg", ".jpeg", ".gif", ".bmp", "webp")):
+                        (".png", ".jpg", ".jpeg", ".gif", ".bmp", "webp")
+                    ):
                         caption = await process_image_link(attachment.url)
                         has_image = True
                         image_caption = (
@@ -253,10 +256,7 @@ async def on_message(message):
 
             history = message_history[key]
 
-            message_history[key].append({
-                "role": "user",
-                "content": message.content
-            })
+            message_history[key].append({"role": "user", "content": message.content})
 
             async def generate_response_in_thread(prompt):
                 response = await generate_response(prompt, history)
@@ -264,22 +264,18 @@ async def on_message(message):
                 chunks = split_response(response)
 
                 if '{"message":"API rate limit exceeded for ip:' in response:
-                    print(
-                        "API rate limit exceeded for ip, wait a few seconds.")
-                    await message.reply(
-                        "sorry i'm a bit tired, try again later.")
+                    print("API rate limit exceeded for ip, wait a few seconds.")
+                    await message.reply("sorry i'm a bit tired, try again later.")
                     return
 
                 for chunk in chunks:
                     chunk = chunk.replace("@everyone", "@ntbozo").replace(
-                        "@here", "@notgonnahappen")
+                        "@here", "@notgonnahappen"
+                    )
                     print(f"Responding to {message.author.name}: {chunk}")
                     await message.reply(chunk)
 
-                message_history[key].append({
-                    "role": "assistant",
-                    "content": response
-                })
+                message_history[key].append({"role": "assistant", "content": response})
 
             async with message.channel.typing():
                 asyncio.create_task(generate_response_in_thread(prompt))
@@ -291,7 +287,8 @@ async def analyse(ctx, user: discord.User):
 
     message_history = []
     async for message in ctx.channel.history(
-            limit=1500):  # easiest way i could think of + fairly fast
+        limit=1500
+    ):  # easiest way i could think of + fairly fast
         if message.author == user:
             message_history.append(message.content)
 
@@ -358,16 +355,28 @@ async def toggleactive(ctx):
             with open("channels.txt", "w") as f:
                 for id in active_channels:
                     f.write(str(id) + "\n")
-            await ctx.send(
-                f"{ctx.channel.mention} has been removed from the list of active channels."
-            )
+
+            if ctx.channel.type == discord.ChannelType.private:
+                await ctx.send(
+                    f"This DM channel has been removed from the list of active channels."
+                )
+            else:
+                await ctx.send(
+                    f"{ctx.channel.mention} has been removed from the list of active channels."
+                )
         else:
             active_channels.add(channel_id)
             with open("channels.txt", "a") as f:
                 f.write(str(channel_id) + "\n")
-            await ctx.send(
-                f"{ctx.channel.mention} has been added to the list of active channels."
-            )
+
+            if ctx.channel.type == discord.ChannelType.private:
+                await ctx.send(
+                    f"This DM channel has been added to the list of active channels."
+                )
+            else:
+                await ctx.send(
+                    f"{ctx.channel.mention} has been added to the list of active channels."
+                )
 
 
 style_mapping = {
@@ -403,48 +412,47 @@ style_mapping = {
     "dystopian": "DYSTOPIAN",
 }
 
+################################ This command seems to be currently broken :(
+# @bot.command()
+# async def imagine(ctx, *, args: str):
+#     args = args.replace("“", '"').replace("”", '"')
 
-@bot.command()
-async def imagine(ctx, *, args: str):
-    args = args.replace("“", '"').replace("”", '"')
+#     arguments = args.split('"')
 
-    arguments = args.split('"')
+#     if len(arguments) < 4:
+#         await ctx.reply(
+#             'Error: Arguments must be enclosed in quotation marks. For example: `~imagine "the game fortnite" "anime"`'
+#         )
+#         return
 
-    if len(arguments) < 4:
-        await ctx.reply(
-            'Error: Arguments must be enclosed in quotation marks. For example: `~imagine "the game fortnite" "anime"`'
-        )
-        return
+#     prompt = arguments[1]
+#     style = arguments[3].lower()
 
-    prompt = arguments[1]
-    style = arguments[3].lower()
+#     if style not in style_mapping:
+#         await ctx.send(
+#             "Invalid style! Styles: `realistic`, `anime`, `disney`, `studio ghibli`, `graffiti`, `medieval`, `fantasy`, `neon`, `cyberpunk`, `landscape`, `japanese`, `steampunk`, `sketch`, `comic book`, `v4 creative`, `imagine v3`, `logo`, `pixel art`, `interior`, `mystical`, `surrealistic`, `minecraft`, `dystopian`."
+#         )
+#         return
 
-    if style not in style_mapping:
-        await ctx.send(
-            "Invalid style! Styles: `realistic`, `anime`, `disney`, `studio ghibli`, `graffiti`, `medieval`, `fantasy`, `neon`, `cyberpunk`, `landscape`, `japanese`, `steampunk`, `sketch`, `comic book`, `v4 creative`, `imagine v3`, `logo`, `pixel art`, `interior`, `mystical`, `surrealistic`, `minecraft`, `dystopian`."
-        )
-        return
+#     ratios = ["RATIO_1X1", "RATIO_4X3", "RATIO_16X9", "RATIO_3X2"]
+#     ratio = random.choice(ratios)
 
-    ratios = ["RATIO_1X1", "RATIO_4X3", "RATIO_16X9", "RATIO_3X2"]
-    ratio = random.choice(ratios)
+#     style = style_mapping[style]
 
-    style = style_mapping[style]
+#     temp_message = await ctx.send("Generating image...")
 
-    temp_message = await ctx.send("Generating image...")
+#     filename = await generate_image(prompt, style, ratio, None)
 
-    filename = await generate_image(prompt, style, ratio, None)
+#     file = discord.File(filename, filename="image.png")
 
-    file = discord.File(filename, filename="image.png")
+#     await temp_message.delete()
 
-    await temp_message.delete()
+#     await ctx.send(
+#         content=f"Generated image for {ctx.author.mention} with prompt `{prompt}` in the style of `{style}`:",
+#         file=file,
+#     )
 
-    await ctx.send(
-        content=
-        f"Generated image for {ctx.author.mention} with prompt `{prompt}` in the style of `{style}`:",
-        file=file,
-    )
-
-    os.remove(filename)
+#     os.remove(filename)
 
 
 @bot.command()
