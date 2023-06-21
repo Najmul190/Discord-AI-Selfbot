@@ -191,12 +191,14 @@ async def on_message(message):
     )
 
     is_dm = isinstance(message.channel, discord.DMChannel)
+    is_group_dm = isinstance(message.channel, discord.GroupChannel)
 
     if message.author.id in ignore_users:
         return
 
     if message.content.startswith("~"):
         await bot.process_commands(message)
+        return
 
     if message.author.id == selfbot_id or message.author.bot:
         return
@@ -206,7 +208,14 @@ async def on_message(message):
         or mentioned
         or replied_to
         or is_dm
+        or is_group_dm
     ):
+        if message.reference and message.reference.resolved:
+            if message.reference.resolved.author.id != selfbot_id and (
+                is_dm or is_group_dm
+            ):
+                return
+
         if message.mentions:
             for mention in message.mentions:
                 message.content = message.content.replace(
@@ -219,8 +228,8 @@ async def on_message(message):
         message_history[author_id].append(message.content)
         message_history[author_id] = message_history[author_id][-MAX_HISTORY:]
 
-        if time.time() - message.author.created_at.timestamp() < 2592000:
-            return
+        # if time.time() - message.author.created_at.timestamp() < 2592000:
+        #     return
 
         if message.channel.id in active_channels:
             has_image = False
@@ -360,6 +369,10 @@ async def toggleactive(ctx):
                 await ctx.send(
                     f"This DM channel has been removed from the list of active channels."
                 )
+            elif ctx.channel.type == discord.ChannelType.group:
+                await ctx.send(
+                    f"This group channel has been removed from the list of active channels."
+                )
             else:
                 await ctx.send(
                     f"{ctx.channel.mention} has been removed from the list of active channels."
@@ -372,6 +385,10 @@ async def toggleactive(ctx):
             if ctx.channel.type == discord.ChannelType.private:
                 await ctx.send(
                     f"This DM channel has been added to the list of active channels."
+                )
+            elif ctx.channel.type == discord.ChannelType.group:
+                await ctx.send(
+                    f"This group channel has been added to the list of active channels."
                 )
             else:
                 await ctx.send(
