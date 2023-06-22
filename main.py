@@ -429,47 +429,47 @@ style_mapping = {
     "dystopian": "DYSTOPIAN",
 }
 
-################################ This command seems to be currently broken :(
-# @bot.command()
-# async def imagine(ctx, *, args: str):
-#     args = args.replace("“", '"').replace("”", '"')
 
-#     arguments = args.split('"')
+@bot.command()
+async def imagine(ctx, *, args: str):
+    args = args.replace("“", '"').replace("”", '"')
 
-#     if len(arguments) < 4:
-#         await ctx.reply(
-#             'Error: Arguments must be enclosed in quotation marks. For example: `~imagine "the game fortnite" "anime"`'
-#         )
-#         return
+    arguments = args.split('"')
 
-#     prompt = arguments[1]
-#     style = arguments[3].lower()
+    if len(arguments) < 4:
+        await ctx.reply(
+            'Error: Arguments must be enclosed in quotation marks. For example: `~imagine "the game fortnite" "anime"`'
+        )
+        return
 
-#     if style not in style_mapping:
-#         await ctx.send(
-#             "Invalid style! Styles: `realistic`, `anime`, `disney`, `studio ghibli`, `graffiti`, `medieval`, `fantasy`, `neon`, `cyberpunk`, `landscape`, `japanese`, `steampunk`, `sketch`, `comic book`, `v4 creative`, `imagine v3`, `logo`, `pixel art`, `interior`, `mystical`, `surrealistic`, `minecraft`, `dystopian`."
-#         )
-#         return
+    prompt = arguments[1]
+    style = arguments[3].lower()
 
-#     ratios = ["RATIO_1X1", "RATIO_4X3", "RATIO_16X9", "RATIO_3X2"]
-#     ratio = random.choice(ratios)
+    if style not in style_mapping:
+        await ctx.send(
+            "Invalid style! Styles: `realistic`, `anime`, `disney`, `studio ghibli`, `graffiti`, `medieval`, `fantasy`, `neon`, `cyberpunk`, `landscape`, `japanese`, `steampunk`, `sketch`, `comic book`, `v4 creative`, `imagine v3`, `logo`, `pixel art`, `interior`, `mystical`, `surrealistic`, `minecraft`, `dystopian`."
+        )
+        return
 
-#     style = style_mapping[style]
+    ratios = ["RATIO_1X1", "RATIO_4X3", "RATIO_16X9", "RATIO_3X2"]
+    ratio = random.choice(ratios)
 
-#     temp_message = await ctx.send("Generating image...")
+    style = style_mapping[style]
 
-#     filename = await generate_image(prompt, style, ratio, None)
+    temp_message = await ctx.send("Generating image...")
 
-#     file = discord.File(filename, filename="image.png")
+    filename = await generate_image(prompt, style, ratio, None)
 
-#     await temp_message.delete()
+    file = discord.File(filename, filename="image.png")
 
-#     await ctx.send(
-#         content=f"Generated image for {ctx.author.mention} with prompt `{prompt}` in the style of `{style}`:",
-#         file=file,
-#     )
+    await temp_message.delete()
 
-#     os.remove(filename)
+    await ctx.send(
+        content=f"Generated image for {ctx.author.mention} with prompt `{prompt}` in the style of `{style}`:",
+        file=file,
+    )
+
+    os.remove(filename)
 
 
 @bot.command()
@@ -479,7 +479,6 @@ async def styles(ctx):
     )
 
 
-# Read the active channels from channels.txt on startup
 if os.path.exists("channels.txt"):
     with open("channels.txt", "r") as f:
         for line in f:
@@ -512,7 +511,7 @@ Bot Commands:
 ~styles - Get a list of all possible styles for the ~imagine command
 ~analyze @user - Analyze a user's messages to provide a personality profile
 
-Created by Mishal#1916 + Najmul#0001```
+Created by Mishal#1916 + @najmul (451627446941515817)```
 """
 
     await ctx.send(help_text)
