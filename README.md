@@ -4,7 +4,7 @@ This is a [Python](https://www.python.org)-based Discord selfbot using the `disc
 
 This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Discord-Chatbot-Gpt4Free/) by [MishalHossin](https://github.com/mishalhossin/) but was heavily edited by [Najmul190](https://github.com/najmul190) to work as a selfbot rather than a Discord bot.
 
-### <strong> I take no responsibility for any actions taken against your account for using this bot.</strong>
+### <strong> I take no responsibility for any actions taken against your account for using these selfbots, or how users use my open source code.</strong>
 
 ### <strong>Using this on a user account is prohibited by the [Discord TOS](https://discord.com/terms) and can lead to your account getting banned in very rare cases.</strong>
 
