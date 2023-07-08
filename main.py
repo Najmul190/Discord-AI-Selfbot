@@ -56,7 +56,7 @@ async def generate_response(instructions, history=None):
             ],
         }
 
-    endpoint = "https://gpt4.gravityengine.cc/api/openai/v1/chat/completions"
+    endpoint = "https://gpt4.xunika.uk/api/openai/v1/chat/completions"
 
     headers = {
         "Content-Type": "application/json",
