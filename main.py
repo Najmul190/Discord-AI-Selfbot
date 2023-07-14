@@ -179,7 +179,7 @@ with open("instructions.txt", "r", encoding="utf-8") as file:
 message_history = {}
 MAX_HISTORY = 20
 
-ignore_users = []
+ignore_users = [181960927321653258]
 
 
 @bot.event
@@ -273,40 +273,41 @@ async def on_message(message):
                     asyncio.create_task(generate_response_in_thread(prompt))
 
         elif modeltype == 1:
-            stringtrigger = str(trigger).lower()
+            if message.channel.id in active_channels:
+                stringtrigger = str(trigger).lower()
 
-            if stringtrigger in message.content.lower():
-                user_prompt = message.content.replace(stringtrigger, "Bard")
+                if stringtrigger in message.content.lower():
+                    user_prompt = message.content.replace(stringtrigger, "Bard")
 
-            async with message.channel.typing():
-                response = bard.get_answer(user_prompt)
-                images = []
+                async with message.channel.typing():
+                    response = bard.get_answer(user_prompt)
+                    images = []
 
-                if "images" in response:
-                    for image in response["images"]:
-                        images.append(image)
-                response = response["content"]
+                    if "images" in response:
+                        for image in response["images"]:
+                            images.append(image)
+                    response = response["content"]
 
-            response = split_response(response)
+                response = split_response(response)
 
-            for chunk in response:
-                print(f"Responding to {message.author.name}: {chunk}")
+                for chunk in response:
+                    print(f"Responding to {message.author.name}: {chunk}")
 
-                message = await message.reply(chunk)
+                    message = await message.reply(chunk)
 
-                await asyncio.sleep(0.75)
+                    await asyncio.sleep(0.75)
 
-            imageCount = 0
+                imageCount = 0
 
-            if images:
-                for image in images:
-                    if imageCount >= 3:
-                        break
-                    else:
-                        imageCount += 1
-                        await message.reply(image)
+                if images:
+                    for image in images:
+                        if imageCount >= 3:
+                            break
+                        else:
+                            imageCount += 1
+                            await message.reply(image)
 
-                        await asyncio.sleep(1)
+                            await asyncio.sleep(1)
 
 
 @bot.command(aliases=["analyze"])
@@ -377,9 +378,17 @@ async def ignore(ctx, user: discord.User):
     if ctx.author.id == owner_id:
         if user.id in ignore_users:
             ignore_users.remove(user.id)
+
+            with open("ignoredusers.txt", "w") as f:
+                f.write("\n".join(ignore_users))
+
             await ctx.send(f"Unignored {user.name}.")
         else:
             ignore_users.append(user.id)
+
+            with open("ignoredusers.txt", "a") as f:
+                f.write(str(user.id) + "\n")
+
             await ctx.send(f"Ignoring {user.name}.")
 
 
