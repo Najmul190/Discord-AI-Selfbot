@@ -1,12 +1,8 @@
-aiohttp
-aiofiles
 curl_cffi
 fake_useragent
-httpx
 flask
 asyncio
 python-dotenv
 pyYAML
 requests
-pydantic
-langdetect
+bardapi

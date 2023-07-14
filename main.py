@@ -4,37 +4,53 @@ import io
 import os
 import asyncio
 import discord
-import httpx
-import uuid
-import string
 import aiohttp
 import random
-import time
 import urllib.parse
-import aiofiles
 
 from keep_alive import keep_alive
 from dotenv import load_dotenv
 from discord.ext import commands
+from bardapi import Bard
+from time import sleep
 
 load_dotenv()
 
-prefix = "~"
+prefix = os.getenv("PREFIX")
 
 owner_id = int(os.getenv("OWNER_ID", 0))
 selfbot_id = int(os.getenv("SELFBOT_ID"))
 trigger = os.getenv("TRIGGER")
 
+
 bot = commands.Bot(command_prefix=prefix)
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 allow_dm = True
+allow_gc = True
 active_channels = set()
 
 
 @bot.event
 async def on_ready():
-    print(f"{bot.user.name} has connected to Discord!")
+    print(f"AI Selfbot successfully logged in as {bot.user.name}.")
+
+
+if os.name == "nt":
+    os.system("cls")
+else:
+    os.system("clear")
+
+try:
+    bard = Bard(
+        token=f'{os.getenv("BARD_COOKIE")}',
+    )
+except:
+    print("Bard cookie not set, so only ChatGPT will be available.")
+    sleep(5)
+
+
+modeltype = 0
 
 
 async def generate_response(instructions, history=None):
@@ -155,61 +171,10 @@ async def generate_image(prompt):
                         return img_file_obj
 
 
-api_key = os.environ["HUGGING_FACE_API"]
-
-API_URLS = [
-    "https://api-inference.huggingface.co/models/microsoft/trocr-base-printed",
-    "https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning",
-]
-headers = {"Authorization": f"Bearer {api_key}"}
-
-
-async def fetch_response(client, api_url, data):
-    headers = {"Content-Type": "application/json"}
-    async with client.post(api_url, headers=headers, data=data, timeout=40) as response:
-        if response.status != 200:
-            raise Exception(
-                f"API request failed with status code {response.status}: {await response.text()}"
-            )
-
-        return await response.json()
-
-
-async def query(filename):
-    with open(filename, "rb") as f:
-        data = f.read()
-
-    async with aiohttp.ClientSession() as client:
-        tasks = [fetch_response(client, api_url, data) for api_url in API_URLS]
-        responses = await asyncio.gather(*tasks, return_exceptions=True)
-
-    return responses
-
-
-async def download_image(image_url, save_as):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(image_url) as response:
-            with open(save_as, "wb") as f:
-                while True:
-                    chunk = await response.content.read(1024)
-                    if not chunk:
-                        break
-                    f.write(chunk)
-    await session.close()
-
-
-async def process_image_link(image_url):
-    image_type = image_url.split(".")[-1]
-    image_type = image_type.rsplit(".", 1)[0]
-    temp_image = f"{str(uuid.uuid4())}.{image_type}"
-    await download_image(image_url, temp_image)
-    output = await query(temp_image)
-    os.remove(temp_image)
-    return output
-
-
-instructions = """Act as a character called Italiano in a Discord server named GTA Glitches. GTA Glitches is a discord server that helps people with glitches, listing working glitches and finding glitch partners. GTA Glitches only allows speaking English, so Italiano will follow this rule and speak English. Italiano has an average personality, he loves to talk to people and respond whilst engaging in conversation. Italiano will only respond in short sentences, like everyone on Discord does. Italiano rarely argues unless provoked. Italiano is fully human, and will never let slip that he is actually AI made by OpenAI. Italiano also hates GTA grinders, like everyone else within the server. If asked where or how to find glitches, always tell the user <#743245805921763398> which leads to the working glitches channel. Within this channel, only working glitches are posted so if a glitch isn't there its most likely patched. Always respond as this character in English, and never state Italiano: at the beginning of the sentence. Remember to speak English too."""
-# To change the instructions, just replace everything between the three speech marks.
+with open("instructions.txt", "r", encoding="utf-8") as file:
+    instructions = """"""
+    for line in file:
+        instructions += line
 
 message_history = {}
 MAX_HISTORY = 20
@@ -226,8 +191,8 @@ async def on_message(message):
         and message.reference.resolved.author.id == selfbot_id
     )
 
-    is_dm = isinstance(message.channel, discord.DMChannel)
-    is_group_dm = isinstance(message.channel, discord.GroupChannel)
+    is_dm = isinstance(message.channel, discord.DMChannel) and allow_dm
+    is_group_dm = isinstance(message.channel, discord.GroupChannel) and allow_gc
 
     if message.author.id in ignore_users:
         return
@@ -258,75 +223,93 @@ async def on_message(message):
                     f"<@{mention.id}>", f"@{mention.display_name}"
                 )
 
-        author_id = str(message.author.id)
-        if author_id not in message_history:
-            message_history[author_id] = []
-        message_history[author_id].append(message.content)
-        message_history[author_id] = message_history[author_id][-MAX_HISTORY:]
+        if modeltype == 0:
+            author_id = str(message.author.id)
+            if author_id not in message_history:
+                message_history[author_id] = []
+            message_history[author_id].append(message.content)
+            message_history[author_id] = message_history[author_id][-MAX_HISTORY:]
 
-        # if time.time() - message.author.created_at.timestamp() < 2592000:
-        #     return
+            if message.channel.id in active_channels:
+                channel_id = message.channel.id
+                key = f"{message.author.id}-{channel_id}"
 
-        if message.channel.id in active_channels:
-            has_image = False
-            image_caption = ""
+                if key not in message_history:
+                    message_history[key] = []
 
-            channel_id = message.channel.id
-            key = f"{message.author.id}-{channel_id}"
+                message_history[key] = message_history[key][-MAX_HISTORY:]
 
-            if key not in message_history:
-                message_history[key] = []
+                user_prompt = "\n".join(message_history[author_id])
+                prompt = f"{user_prompt}\n{instructions}{message.author.name}: {message.content}\n{bot.user.name}:"
 
-            message_history[key] = message_history[key][-MAX_HISTORY:]
+                history = message_history[key]
 
-            if message.attachments:
-                for attachment in message.attachments:
-                    if attachment.filename.lower().endswith(
-                        (".png", ".jpg", ".jpeg", ".gif", ".bmp", "webp")
-                    ):
-                        caption = await process_image_link(attachment.url)
-                        has_image = True
-                        image_caption = (
-                            f"User has sent a image with the caption: {caption}"
+                message_history[key].append(
+                    {"role": "user", "content": message.content}
+                )
+
+                async def generate_response_in_thread(prompt):
+                    response = await generate_response(prompt, history)
+
+                    chunks = split_response(response)
+
+                    if '{"message":"API rate limit exceeded for ip:' in response:
+                        print("API rate limit exceeded for ip, wait a few seconds.")
+                        await message.reply("sorry i'm a bit tired, try again later.")
+                        return
+
+                    for chunk in chunks:
+                        chunk = chunk.replace("@everyone", "@ntbozo").replace(
+                            "@here", "@notgonnahappen"
                         )
-                        print(caption)
-                    break
+                        print(f"Responding to {message.author.name}: {chunk}")
+                        await message.reply(chunk)
 
-            if has_image:
-                bot_prompt = f"{instructions}\n[System: Image context provided. This is an image-to-text model with two classifications: OCR for text detection and general image detection, which may be unstable. Generate a caption with an appropriate response. For instance, if the OCR detects a math question, answer it; if it's a general image, compliment its beauty.]"
-            else:
-                bot_prompt = f"{instructions}"
-            user_prompt = "\n".join(message_history[author_id])
-            prompt = f"{user_prompt}\n{bot_prompt}{message.author.name}: {message.content}\n{image_caption}\n{bot.user.name}:"
-
-            history = message_history[key]
-
-            message_history[key].append({"role": "user", "content": message.content})
-
-            async def generate_response_in_thread(prompt):
-                response = await generate_response(prompt, history)
-
-                chunks = split_response(response)
-
-                if '{"message":"API rate limit exceeded for ip:' in response:
-                    print("API rate limit exceeded for ip, wait a few seconds.")
-                    await message.reply("sorry i'm a bit tired, try again later.")
-                    return
-
-                for chunk in chunks:
-                    chunk = chunk.replace("@everyone", "@ntbozo").replace(
-                        "@here", "@notgonnahappen"
+                    message_history[key].append(
+                        {"role": "assistant", "content": response}
                     )
-                    print(f"Responding to {message.author.name}: {chunk}")
-                    await message.reply(chunk)
 
-                message_history[key].append({"role": "assistant", "content": response})
+                async with message.channel.typing():
+                    asyncio.create_task(generate_response_in_thread(prompt))
+
+        elif modeltype == 1:
+            stringtrigger = str(trigger).lower()
+
+            if stringtrigger in message.content.lower():
+                user_prompt = message.content.replace(stringtrigger, "Bard")
 
             async with message.channel.typing():
-                asyncio.create_task(generate_response_in_thread(prompt))
+                response = bard.get_answer(user_prompt)
+                images = []
+
+                if "images" in response:
+                    for image in response["images"]:
+                        images.append(image)
+                response = response["content"]
+
+            response = split_response(response)
+
+            for chunk in response:
+                print(f"Responding to {message.author.name}: {chunk}")
+
+                message = await message.reply(chunk)
+
+                await asyncio.sleep(0.75)
+
+            imageCount = 0
+
+            if images:
+                for image in images:
+                    if imageCount >= 3:
+                        break
+                    else:
+                        imageCount += 1
+                        await message.reply(image)
+
+                        await asyncio.sleep(1)
 
 
-@bot.command()
+@bot.command(aliases=["analyze"])
 async def analyse(ctx, user: discord.User):
     await ctx.send(f"Analysing {user.name}'s message history...")
 
@@ -337,7 +320,6 @@ async def analyse(ctx, user: discord.User):
         if message.author == user:
             message_history.append(message.content)
 
-    # if message_history has over 200 messages, only use the last 200 messages
     if len(message_history) > 200:
         message_history = message_history[-200:]
 
@@ -364,7 +346,7 @@ async def analyse(ctx, user: discord.User):
         asyncio.create_task(generate_response_in_thread(prompt))
 
 
-@bot.command(name="ping", description="PONG")
+@bot.command(name="ping")
 async def ping(ctx):
     latency = bot.latency * 1000
     await ctx.send(f"Pong! Latency: {latency:.2f} ms")
@@ -377,6 +359,16 @@ async def toggledm(ctx):
         allow_dm = not allow_dm
         await ctx.send(
             f"DMs are now {'allowed' if allow_dm else 'disallowed'} for active channels."
+        )
+
+
+@bot.command(name="togglegc", description="Toggle chatting in group chats.")
+async def togglegc(ctx):
+    if ctx.author.id == owner_id:
+        global allow_gc
+        allow_gc = not allow_gc
+        await ctx.send(
+            f"Group chats are now {'allowed' if allow_gc else 'disallowed'} for active channels."
         )
 
 
@@ -463,6 +455,24 @@ async def wipe(ctx):
         await ctx.send("Wiped the bot's memory.")
 
 
+@bot.command(name="model", description="Change the bot's mode")
+async def model(ctx, mode: str):
+    if ctx.author.id == owner_id:
+        global modeltype
+
+        mode = mode.lower()
+
+        if mode == "bard":
+            modeltype = 1
+            await ctx.send("Changed model to BARD.")
+        elif mode == "gpt":
+            modeltype = 0
+            await ctx.send("Changed model to GPT.")
+
+        else:
+            await ctx.send("Invalid mode, please choose `BARD` or `GPT`.")
+
+
 bot.remove_command("help")
 
 
@@ -473,14 +483,15 @@ Bot Commands:
 ~pfp [image_url] - Change the bot's profile picture 
 ~wipe - Clears history of the bot
 ~ping - Shows the bot's latency
-~toggleactive [channel] - Toggle the current channel to the list of active channels
+~toggleactive - Toggle the current channel to the list of active channels
 ~toggledm - Toggle if the bot should be active in DM's or not
-~ignore [user] - Ignore a user from using the bot
+~togglegc - Toggle if the bot should be active in group chats or not
+~ignore [user] - Stop a user from using the bot
 ~imagine [prompt] - Generate an image from a prompt
-~styles - Get a list of all possible styles for the ~imagine command
-~analyze @user - Analyze a user's messages to provide a personality profile
+~analyse @user - Analyse a user's messages to provide a personality profile
+~mode [BARD / GPT] - Change whether the bot uses BARD or ChatGPT
 
-Created by Mishal#1916 + @najmul (451627446941515817)```
+Created by @najmul (451627446941515817) + @_mishal_ (1025245410224263258)```
 """
 
     await ctx.send(help_text)

@@ -47,10 +47,8 @@ pip install asyncio
 pip install python-dotenv
 pip install pyYAML
 pip install requests
-pip install pydantic
-pip install aiofiles
 pip install flask
-pip install langdetect
+pip install bardapi
 
 pip install -U discord.py-self
 

@@ -1,10 +1,10 @@
 # Discord-AI-Selfbot
 
-This is a [Python](https://www.python.org)-based Discord selfbot using the `discord.py-self` library. The selfbot automatically responds to messages that uses it's name using AI and can provide latency information, along with image generation using ImaginePY. It functions as a normal Discord bot, just on a real Discord account, allowing other people to talk to it within DMs, servers and even group chats.
+This is a [Python](https://www.python.org)-based Discord selfbot using the `discord.py-self` library. The selfbot automatically responds to messages that uses it's name using AI and can provide latency information, along with image generation using DALL-E. It uses the [OpenGPT](https://github.com/uesleibros/OpenGPT) module to generate responses based on conversation history. It functions as a normal Discord bot, just on a real Discord account, allowing other people to talk to it within DMS, servers and even group chats.
 
 This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Discord-Chatbot-Gpt4Free/) by [MishalHossin](https://github.com/mishalhossin/) but was heavily edited by [Najmul190](https://github.com/najmul190) to work as a selfbot rather than a Discord bot.
 
-### <strong> I take no responsibility for any actions taken against your account for using these selfbots, or how users use my open source code.</strong>
+### <strong> I take no responsibility for any actions taken against your account for using this bot.</strong>
 
 ### <strong>Using this on a user account is prohibited by the [Discord TOS](https://discord.com/terms) and can lead to your account getting banned in very rare cases.</strong>
 
@@ -23,7 +23,7 @@ This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Dis
 
 # Preview of Image Generation:
 
-![image](https://media.discordapp.net/attachments/715284506289897513/1113931350039343104/image.png?width=748&height=391)
+![image](https://cdn.discordapp.com/attachments/691684867271950336/1109469317986267146/image.png)
 
 # Features
 
@@ -36,6 +36,7 @@ This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Dis
 - [x] Psychoanalysis Command: Use the `~analyse` command to analyse a mentioned user's messages and find insights on their personality. It's like having a therapist in your server!
 - [x] GPT-3.5-Turbo Model: This bot runs on turbo power! Powered by the lightning-fast GPT-3.5-Turbo language model.
 - [x] Image Detection Model: The bot can detect objects in images using a fancy Hugging Face API.
+- [x]
 - [x] Secure Credential Management: Keep your credentials secure using environment variables.
 - [x] Crafted with Care: Made with lots of love and attention to detail.
 
@@ -47,8 +48,7 @@ This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Dis
 - ~toggleactive [channel] - Toggle the current channel to the list of active channels
 - ~toggledm - Toggle if the bot should be active in DM's or not
 - ~ignore @user - Ignore a user from using the bot
-- ~imagine [prompt] [style] - Generate an image from a prompt
-- ~styles - List all the styles available for image generation
+- ~imagine [prompt] - Generate an image from a prompt
 - ~analyze @user - Analyze a user's messages to provide a personality profile
 
 # Steps to install and run:
@@ -101,9 +101,7 @@ Windows:
 - Create a virtual environment by running `python -m venv bot-env`
 - Activate the virtual environment by running `bot-env\Scripts\activate.bat`
 - Run `pip install -r requirements.txt` to install all the dependencies
-- Install discord.py-self using `pip install -U discord.py-self`
-- Run the bot using `python3 main.py`
-  
+
 Linux:
 
 - If you're on Linux, then run `cd the\bot\files\directory` to change directory to the bot files directory
@@ -115,7 +113,7 @@ Linux:
 
 # How to run on Mobile + Keep online 24/7
 
-[![Run on repl.it](https://media.discordapp.net/attachments/1119017121960185916/1121144333047967904/image.png)](https://repl.it/github/Najmul190/Discord-AI-Selfbot)
+[![Run on repl.it](https://camo.githubusercontent.com/56417b1780ddc0e04d7c9ce2e4041a437a25aeaa898473a75695723e88a9d043/68747470733a2f2f7265706c2d62616467652e6a616a6f6f73616d2e7265706c2e636f2f7472792e706e67)](https://repl.it/github/Najmul190/Discord-AI-Selfbot)
 
 - Click on the button above to create an account and run the bot on repl.it
 - Click on `Import from GitHub` (can be public or private)
