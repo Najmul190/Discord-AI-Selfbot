@@ -197,7 +197,7 @@ async def on_message(message):
     if message.author.id in ignore_users:
         return
 
-    if message.content.startswith("~"):
+    if message.content.startswith(prefix):
         await bot.process_commands(message)
         return
 
