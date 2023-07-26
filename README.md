@@ -43,7 +43,6 @@ This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Dis
 ## Commands
 
 - ~model [BARD / GPT] - Change the model the bot uses to generate responses
-- ~pfp [image_url] - Change the bot's profile picture
 - ~wipe - Clears history of the bot
 - ~ping - Shows the bot's latency
 - ~toggleactive [channel] - Toggle the current channel to the list of active channels
