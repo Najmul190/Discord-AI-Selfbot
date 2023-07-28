@@ -20,8 +20,8 @@ prefix = os.getenv("PREFIX")
 
 owner_id = int(os.getenv("OWNER_ID", 0))
 selfbot_id = int(os.getenv("SELFBOT_ID"))
-trigger = os.getenv("TRIGGER")
 
+trigger = os.getenv("TRIGGER").lower().split(",")
 
 bot = commands.Bot(command_prefix=prefix)
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -206,7 +206,7 @@ async def on_message(message):
         return
 
     if (
-        any(keyword in message.content.lower() for keyword in [trigger.lower()])
+        any(keyword in message.content.lower() for keyword in trigger)
         or mentioned
         or replied_to
         or is_dm
