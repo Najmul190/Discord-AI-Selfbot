@@ -46,7 +46,7 @@ try:
         token=f'{os.getenv("BARD_COOKIE")}',
     )
 except:
-    print("Bard cookie not set, so only ChatGPT will be available.")
+    print("Bard cookie not set or has expired, so only ChatGPT will be available.")
     sleep(5)
 
 
@@ -275,11 +275,6 @@ async def on_message(message):
 
         elif modeltype == 1:
             if message.channel.id in active_channels:
-                stringtrigger = str(trigger).lower()
-
-                if stringtrigger in message.content.lower():
-                    user_prompt = message.content.replace(stringtrigger, "Bard")
-
                 async with message.channel.typing():
                     response = bard.get_answer(user_prompt)
                     images = []
@@ -499,7 +494,7 @@ Bot Commands:
 ~ignore [user] - Stop a user from using the bot
 ~imagine [prompt] - Generate an image from a prompt
 ~analyse @user - Analyse a user's messages to provide a personality profile
-~mode [BARD / GPT] - Change whether the bot uses BARD or ChatGPT
+~model [BARD / GPT] - Change whether the bot uses BARD or ChatGPT
 
 Created by @najmul (451627446941515817) + @_mishal_ (1025245410224263258)```
 """
