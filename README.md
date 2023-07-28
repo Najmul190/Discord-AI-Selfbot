@@ -146,6 +146,8 @@ PREFIX
 - Then click on the `Run` button, which will start to install all dependencies and then run your selfbot.
 - Start talking to your new friend!
 
+- To run it 24/7, use [UptimeRobot](https://uptimerobot.com/).
+
 # How to talk to the bot
 
 - To activate it in a channel use **~toggleactive** in the channel or manually add the channel ID in `channels.txt`
