@@ -54,29 +54,21 @@ modeltype = 0
 
 
 async def generate_response(instructions, history=None):
-    if history is None:
-        data = {
-            "model": "gpt-3.5-turbo-16k-0613",
-            "temperature": 0.75,
-            "messages": [
-                {"role": "system", "content": instructions},
-            ],
-        }
-    else:
-        data = {
-            "model": "gpt-3.5-turbo-16k-0613",
-            "temperature": 0.75,
-            "messages": [
-                {"role": "system", "content": instructions},
-                *history,
-            ],
-        }
+    messages = [
+            {"role": "system", "content": instructions},
+            *history,
+        ]
+    data = {
+        "model": "gpt-3.5-turbo-16k-0613",
+        "temperature": 0.75,
+        "messages": messages,
+    }
 
     endpoint = "https://gpt4.xunika.uk/api/openai/v1/chat/completions"
 
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer nk-chatgptorguk",
+        "Authorization": "Bearer nk-chatgptorguk",
     }
 
     try:
@@ -126,25 +118,8 @@ async def generate_job(prompt, seed=None):
         "sampler": "Euler",
         "aspect_ratio": "square",
     }
-    headers = {
-        "authority": "api.prodia.com",
-        "accept": "*/*",
-        "accept-language": "en-US,en;q=0.6",
-        "dnt": "1",
-        "origin": "https://app.prodia.com",
-        "referer": "https://app.prodia.com/",
-        "sec-ch-ua": '"Brave";v="113", "Chromium";v="113", "Not-A.Brand";v="24"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Linux"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-site",
-        "sec-gpc": "1",
-        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
-    }
-
     async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params, headers=headers) as response:
+        async with session.get(url, params=params) as response:
             data = await response.json()
             return data["job"]
 
@@ -201,7 +176,8 @@ async def on_message(message):
     if message.content.startswith(prefix):
         await bot.process_commands(message)
         return
-
+    if not (message is not None and message.content.strip()):
+        return
     if message.author.id == selfbot_id or message.author.bot:
         return
 
@@ -314,10 +290,13 @@ async def analyse(ctx, user: discord.User):
 
     message_history = []
     async for message in ctx.channel.history(
-        limit=1500
-    ):  # easiest way i could think of + fairly fast
+        limit=300
+    ):  # easiest way i could think of + fairly fast + hallucinates if you have more messages
         if message.author == user:
-            message_history.append(message.content)
+            if message is not None and message.content.strip():
+                message_history.append(message.content)
+            else:
+                continue
 
     if len(message_history) > 200:
         message_history = message_history[-200:]
@@ -485,7 +464,7 @@ bot.remove_command("help")
 
 @bot.command(name="help", description="Get all other commands!")
 async def help(ctx):
-    help_text = """```
+    help_text = """```asciidoc
 Bot Commands:
 ~pfp [image_url] - Change the bot's profile picture 
 ~wipe - Clears history of the bot
@@ -497,10 +476,9 @@ Bot Commands:
 ~imagine [prompt] - Generate an image from a prompt
 ~analyse @user - Analyse a user's messages to provide a personality profile
 ~model [BARD / GPT] - Change whether the bot uses BARD or ChatGPT
-
-Created by @najmul (451627446941515817) + @_mishal_ (1025245410224263258)```
+```
+Created by @najmul (<@451627446941515817>) + @_mishal_ (<1025245410224263258>)
 """
-
     await ctx.send(help_text)
 
 
