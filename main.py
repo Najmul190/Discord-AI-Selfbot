@@ -76,7 +76,7 @@ async def generate_response(instructions, history=None):
 
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer ak-chatgptorguk",
+        "Authorization": f"Bearer nk-chatgptorguk",
     }
 
     try:
