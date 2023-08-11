@@ -275,6 +275,8 @@ async def on_message(message):
 
         elif modeltype == 1:
             if message.channel.id in active_channels:
+                user_prompt = message.content
+
                 async with message.channel.typing():
                     response = bard.get_answer(user_prompt)
                     images = []
