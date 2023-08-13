@@ -77,6 +77,7 @@ async def generate_response(instructions, history=None):
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer nk-chatgptorguk",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)",
     }
 
     try:
