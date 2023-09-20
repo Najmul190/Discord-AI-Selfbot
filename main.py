@@ -1,13 +1,15 @@
-# Uses discord.py-self to run code on a Discord user account
-
+# import libraries
 import io
 import os
+import time
 import asyncio
 import discord
 import aiohttp
 import random
 import urllib.parse
 
+
+# import modules
 from keep_alive import keep_alive
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -30,6 +32,15 @@ allow_dm = True
 allow_gc = True
 active_channels = set()
 
+async def send_with_typing(channel, message):
+    # figure out the typing duration based on the messages length :3 
+    typing_duration = len(message) / 10
+    
+    async with channel.typing():
+        await asyncio.sleep(typing_duration)
+        await channel.send(message)
+
+
 
 @bot.event
 async def on_ready():
@@ -48,7 +59,6 @@ try:
 except:
     print("Bard cookie not set or has expired, so only ChatGPT will be available.")
     sleep(5)
-
 
 modeltype = 0
 
@@ -110,6 +120,7 @@ def split_response(response, max_length=1900):
 
     return chunks
 
+# read https://docs.prodia.com/reference/generate to figure out how to change the models and stuff
 
 async def generate_job(prompt, seed=None):
     if seed is None:
@@ -183,6 +194,7 @@ MAX_HISTORY = 20
 
 ignore_users = [181960927321653258]
 
+# :3
 
 @bot.event
 async def on_message(message):
@@ -265,7 +277,7 @@ async def on_message(message):
                             "@here", "@notgonnahappen"
                         )
                         print(f"Responding to {message.author.name}: {chunk}")
-                        await message.reply(chunk)
+                        await send_with_typing(message.channel, chunk)
 
                     message_history[key].append(
                         {"role": "assistant", "content": response}
@@ -316,7 +328,7 @@ async def analyse(ctx, user: discord.User):
     message_history = []
     async for message in ctx.channel.history(
         limit=1500
-    ):  # easiest way i could think of + fairly fast
+    ): 
         if message.author == user:
             message_history.append(message.content)
 
@@ -497,9 +509,7 @@ Bot Commands:
 ~ignore [user] - Stop a user from using the bot
 ~imagine [prompt] - Generate an image from a prompt
 ~analyse @user - Analyse a user's messages to provide a personality profile
-~model [BARD / GPT] - Change whether the bot uses BARD or ChatGPT
-
-Created by @najmul (451627446941515817) + @_mishal_ (1025245410224263258)```
+~model [BARD / GPT] - Change whether the bot uses BARD or ChatGPT```
 """
 
     await ctx.send(help_text)
