@@ -122,32 +122,6 @@ Linux:
 - Install discord.py-self using `pip install -U discord.py-self`
 - Run the bot using `python3 main.py`
 
-# How to run on Mobile + Keep online 24/7
-
-[![Run on repl.it](https://media.discordapp.net/attachments/1119017121960185916/1121144333047967904/image.png)](https://repl.it/github/Najmul190/Discord-AI-Selfbot)
-
-- Click on the button above to create an account and run the bot on repl.it
-- Click on `Import from GitHub`
-  ![image](https://media.discordapp.net/attachments/918997350238797855/1109812776857255996/image.png?width=651&height=321)
-- Do Step 3 and 4 from above to get the information
-- Add the following as a secret each, along with the corresponding value: (trigger value should not be in quotes)
-
-```
-BARD_COOKIE
-DISCORD_TOKEN
-OWNER_ID
-SELFBOT_ID
-TRIGGER
-PREFIX
-```
-
-![image](https://cdn.discordapp.com/attachments/918997350238797855/1129708379208691803/image.png)
-
-- Then click on the `Run` button, which will start to install all dependencies and then run your selfbot.
-- Start talking to your new friend!
-
-- To run it 24/7, use [UptimeRobot](https://uptimerobot.com/).
-
 # How to talk to the bot
 
 - To activate it in a channel use **~toggleactive** in the channel or manually add the channel ID in `channels.txt`
