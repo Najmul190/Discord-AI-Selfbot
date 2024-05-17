@@ -1,4 +1,4 @@
-# Discord-AI-Selfbot
+# Discord-AI-Selfbot (MAJOR UPDATE COMING SOON!)
 
 This is a [Python](https://www.python.org)-based Discord selfbot using the `discord.py-self` library. The selfbot automatically responds to messages that uses it's trigger word using either ChatGPT or BARD and has image generation using an external endpoint, **all for completely free**. It functions as a normal Discord bot, just on a real Discord account, allowing other people to talk to it within DMs, servers and even group chats without you needing to invite a bot or add the bot to the server - making it seem like a real user to others.
 
