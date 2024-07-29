@@ -1,8 +1,4 @@
-curl_cffi
-fake_useragent
-flask
-asyncio
+colorama
+groq
 python-dotenv
-pyYAML
-requests
-bardapi
+asyncio
