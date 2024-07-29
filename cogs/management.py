@@ -34,12 +34,12 @@ class Management(commands.Cog):
             if ctx.author.id == self.bot.owner_id:
                 if user.id in self.bot.ignore_users:
                     self.bot.ignore_users.remove(user.id)
-                    with open("ignoredusers.txt", "w") as f:
+                    with open("config/ignoredusers.txt", "w") as f:
                         f.write("\n".join(map(str, self.bot.ignore_users)))
                     await ctx.send(f"Unignored {user.name}.")
                 else:
                     self.bot.ignore_users.append(user.id)
-                    with open("ignoredusers.txt", "a") as f:
+                    with open("config/ignoredusers.txt", "a") as f:
                         f.write(str(user.id) + "\n")
                     await ctx.send(f"Ignoring {user.name}.")
 
@@ -52,7 +52,7 @@ class Management(commands.Cog):
             channel_id = ctx.channel.id
             if channel_id in self.bot.active_channels:
                 self.bot.active_channels.remove(channel_id)
-                with open("channels.txt", "w") as f:
+                with open("config/channels.txt", "w") as f:
                     for id in self.bot.active_channels:
                         f.write(str(id) + "\n")
                 await ctx.send(
@@ -60,7 +60,7 @@ class Management(commands.Cog):
                 )
             else:
                 self.bot.active_channels.add(channel_id)
-                with open("channels.txt", "a") as f:
+                with open("config/channels.txt", "a") as f:
                     f.write(str(channel_id) + "\n")
                 await ctx.send(
                     f"{'This DM' if isinstance(ctx.channel, discord.DMChannel) else 'This group' if isinstance(ctx.channel, discord.GroupChannel) else ctx.channel.mention} has been added to the list of active channels."
