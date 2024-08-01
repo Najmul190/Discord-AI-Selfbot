@@ -26,6 +26,7 @@ bot.allow_gc = True
 bot.active_channels = set()
 bot.ignore_users = []
 bot.message_history = {}
+bot.paused = False
 MAX_HISTORY = 30
 
 
@@ -133,7 +134,11 @@ def is_trigger_message(message):
     )
     is_dm = isinstance(message.channel, discord.DMChannel) and bot.allow_dm
     is_group_dm = isinstance(message.channel, discord.GroupChannel) and bot.allow_gc
-    content_has_trigger = any(keyword in message.content.lower() for keyword in TRIGGER)
+
+    content_has_trigger = any(
+        re.search(rf"\b{re.escape(keyword)}\b", message.content.lower())
+        for keyword in TRIGGER
+    )
 
     return (
         content_has_trigger
@@ -189,7 +194,7 @@ async def on_message(message):
         await bot.process_commands(message)
         return
 
-    if is_trigger_message(message):
+    if is_trigger_message(message) and not bot.paused:
         if message.reference and message.reference.resolved:
             if message.reference.resolved.author.id != bot.selfbot_id and (
                 isinstance(message.channel, discord.DMChannel)
@@ -203,10 +208,10 @@ async def on_message(message):
             )
 
         #################### Put a # before each line ######################
-        for t in TRIGGER:
-            message.content = re.sub(
-                rf"\b{t}\b", "ChatGPT", message.content, flags=re.IGNORECASE
-            )
+        # for t in TRIGGER:
+        #     message.content = re.sub(
+        #         rf"\b{t}\b", "ChatGPT", message.content, flags=re.IGNORECASE
+        #     )
         ####################################################################
 
         author_id = str(message.author.id)
@@ -222,7 +227,7 @@ async def on_message(message):
                 {"role": "user", "content": message.content}
             )
             history = bot.message_history[key]
-            prompt = f"{message.author.name}: {message.content}"
+            prompt = message.content
 
             async with message.channel.typing():
                 response = await generate_response_and_reply(message, prompt, history)

@@ -10,6 +10,16 @@ class Management(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(
+        name="pause", description="Pause the bot from producing AI responses."
+    )
+    async def pause(self, ctx):
+        if ctx.author.id == self.bot.owner_id:
+            self.bot.paused = not self.bot.paused
+            await ctx.send(
+                f"{'Paused' if self.bot.paused else 'Unpaused'} the bot from producing AI responses."
+            )
+
     @commands.command(name="toggledm", description="Toggle DM for chatting")
     async def toggledm(self, ctx):
         if ctx.author.id == self.bot.owner_id:

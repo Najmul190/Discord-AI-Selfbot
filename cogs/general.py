@@ -20,6 +20,7 @@ class General(commands.Cog):
         prefix = self.bot.command_prefix
         help_text = f"""```
 Bot Commands:
+{prefix}pause - Pause the bot from producing AI responses
 {prefix}analyse [user] - Analyze a user's message history and provides a psychological profile
 {prefix}wipe - Clears history of the bot
 {prefix}ping - Shows the bot's latency
