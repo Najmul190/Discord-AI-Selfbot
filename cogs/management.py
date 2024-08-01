@@ -10,8 +10,6 @@ class Management(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # await ctx.send("All cogs reloaded.")
-
     @commands.command(name="toggledm", description="Toggle DM for chatting")
     async def toggledm(self, ctx):
         if ctx.author.id == self.bot.owner_id:
