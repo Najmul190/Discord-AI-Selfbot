@@ -74,25 +74,42 @@ async def on_ready():
     for channel_id in bot.active_channels:
         channel = bot.get_channel(channel_id)
         if channel:
-            print(f"- #{channel.name} in {channel.guild.name}")
+            try:
+                print(f"- #{channel.name} in {channel.guild.name}")
+            except Exception:
+                pass
 
     print_separator()
+
 
 if os.path.exists("config/instructions.txt"):
     with open("config/instructions.txt", "r", encoding="utf-8") as file:
         instructions = file.read()
+else:
+    print(
+        "Instructions file not found. Please provide instructions in config/instructions.txt"
+    )
+    exit(1)
 
 if os.path.exists("config/channels.txt"):
     with open("config/channels.txt", "r") as f:
         for line in f:
             channel_id = int(line.strip())
             bot.active_channels.add(channel_id)
+else:
+    print("Active channels file not found. Creating a new one.")
+    with open("config/channels.txt", "w"):
+        pass
 
 if os.path.exists("config/ignoredusers.txt"):
     with open("config/ignoredusers.txt", "r") as f:
         for line in f:
             user_id = int(line.strip())
             bot.ignore_users.append(user_id)
+else:
+    print("Ignored users file not found. Creating a new one.")
+    with open("config/ignoredusers.txt", "w"):
+        pass
 
 
 def should_ignore_message(message):
@@ -104,8 +121,10 @@ def should_ignore_message(message):
 
 
 def is_trigger_message(message):
-    mentioned = bot.user.mentioned_in(message) and not (
-        "@everyone" in message.content or "@here" in message.content
+    mentioned = (
+        bot.user.mentioned_in(message)
+        and "@everyone" not in message.content
+        and "@here" not in message.content
     )
     replied_to = (
         message.reference
@@ -114,13 +133,15 @@ def is_trigger_message(message):
     )
     is_dm = isinstance(message.channel, discord.DMChannel) and bot.allow_dm
     is_group_dm = isinstance(message.channel, discord.GroupChannel) and bot.allow_gc
+    content_has_trigger = any(keyword in message.content.lower() for keyword in TRIGGER)
 
     return (
-        any(keyword in message.content.lower() for keyword in TRIGGER)
+        content_has_trigger
         or mentioned
         or (replied_to and mentioned)
         or is_dm
         or is_group_dm
+        and (mentioned or replied_to or content_has_trigger)
     )
 
 
@@ -189,7 +210,9 @@ async def on_message(message):
         author_id = str(message.author.id)
         update_message_history(author_id, message.content)
 
-        if message.channel.id in bot.active_channels:
+        if message.channel.id in bot.active_channels or (
+            isinstance(message.channel, discord.GroupChannel) and bot.allow_gc
+        ):
             key = f"{message.author.id}-{message.channel.id}"
             if key not in bot.message_history:
                 bot.message_history[key] = []
