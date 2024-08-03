@@ -127,4 +127,4 @@ Linux:
 
 If you're feeling rich and grateful, feel free to donate by clicking this button!
 
-[![ko-fi](https://www.ko-fi.com/img/donate_sm.png)](https://ko-fi.com/najmulx)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E1Q7XEZ)
