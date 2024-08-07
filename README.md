@@ -127,7 +127,7 @@ Linux:
 
 I probably won't be accepting friend requests so if you have any questions or require help, join a quick Discord server I put together and ask in there! (You can leave after getting help, or stick around if you want!)
 
-You can also try out this project in this server, in the #italiano channel! Click the image below to join.
+You can also try out this project in this server, in the [#italiano](https://discord.com/channels/1269313927150309491/1270821127001866311) channel! Click the image below to join.
 
 [![Discord Banner 2](https://discord.com/api/guilds/1269313927150309491/widget.png?style=banner2)](https://discord.gg/yUWmzQBV4P)
 
