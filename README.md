@@ -123,6 +123,12 @@ Linux:
 -   Bear in mind that the bot will only respond to **other accounts** and not itself, including any commands.
 -   You must also set a trigger word within the `.env`, this is the word that the bot will respond to. For example, if you set the trigger word to `John`, people must say "Hey `John`, how are you today?" for the bot to respond.
 
+# Support
+
+I probably won't be accepting friend requests, so if you have any questions or require help join a quick Discord server I put together and ask in there! (You can leave after getting help, or stick around if you want!)
+
+[![Discord Banner 2](https://discord.com/api/guilds/1269313927150309491/widget.png?style=banner2)](https://discord.gg/yUWmzQBV4P)
+
 # Donate
 
 If you're feeling rich and grateful, feel free to donate by clicking this button!
