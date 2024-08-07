@@ -19,11 +19,11 @@ This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Dis
 
 ![image](https://cdn.discordapp.com/attachments/1241152501336772709/1267566207247188079/image.png?ex=66a94086&is=66a7ef06&hm=11cac192c2a18be7c3154a6154e841c6adffb64ff577a3f78e961b3055f00b50&)
 
-![image](https://cdn.discordapp.com/attachments/1241152501336772709/1267566298200543232/image.png?ex=66a9409b&is=66a7ef1b&hm=b1396a8be36f87399bd23f450876a176f916ca25880a8e2931ecceaf1e912af3&)
+![image](https://cdn.discordapp.com/attachments/1241152501336772709/1267566298200543232/image.png?ex=66b4755b&is=66b323db&hm=4d22621aae21c8c55f27dd498119402128605cd0986940c8c6f1d2bf3caf548e&)
 
 # Preview of Analyse command:
 
-![image](https://media.discordapp.net/attachments/1241152501336772709/1267572436925284414/image.png?ex=66a94653&is=66a7f4d3&hm=49c85bf2dae7cda83c6cf4573b65da67cc78b00fcbc683cab8ebb8c78a1cb42b&=&format=webp&quality=lossless&width=614&height=326)
+![image](https://cdn.discordapp.com/attachments/1241152501336772709/1267572436925284414/image.png?ex=66b47b13&is=66b32993&hm=a960cc4b4bad7e56178acaf3ed2e7c9b1a0effdae52a9bf1285a543d128e3175&)
 
 > Note: This analysis is based on the user's message history and is not 100% accurate. It is just for fun and should not be taken seriously.
 
@@ -127,4 +127,4 @@ Linux:
 
 If you're feeling rich and grateful, feel free to donate by clicking this button!
 
-[![ko-fi](https://www.ko-fi.com/img/donate_sm.png)](https://ko-fi.com/najmulx)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E1Q7XEZ)
