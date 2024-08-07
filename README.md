@@ -1,6 +1,6 @@
 # Discord-AI-Selfbot
 
-This is a [Python](https://www.python.org)-based Discord selfbot using the `discord.py-self` library. The selfbot automatically responds to messages that mention it's trigger word using Groq API's Llama-3, one of the highest performing models, **all for completely free**. It functions as a normal Discord bot, but on a real Discord account, allowing other people to talk to it within DMs, servers and even group chats without you needing to invite a bot or add the bot to the server - making it seem like a real user to others.
+This is a [Python](https://www.python.org)-based Discord selfbot using the `discord.py-self` library. The selfbot automatically responds to messages that mention it's trigger word using Groq API's Llama-3, one of the highest performing models, **all for completely free**. You can also add your own API key for ChatGPT functionality, but this is not required. It functions as a normal Discord bot, but on a real Discord account, allowing other people to talk to it within DMs, servers and even group chats without you needing to invite a bot or add the bot to the server - making it seem like a real user to others.
 
 > There is always the slight risk of a ban so make sure to use this selfbot on an account you don't mind losing, but the risk is incredibly low and I have used it for over a year without any issues.
 
@@ -122,6 +122,14 @@ Linux:
 -   To see all commands use **~help**
 -   Bear in mind that the bot will only respond to **other accounts** and not itself, including any commands.
 -   You must also set a trigger word within the `.env`, this is the word that the bot will respond to. For example, if you set the trigger word to `John`, people must say "Hey `John`, how are you today?" for the bot to respond.
+
+# Support + Try out the bot!
+
+I probably won't be accepting friend requests so if you have any questions or require help, join a quick Discord server I put together and ask in there! (You can leave after getting help, or stick around if you want!)
+
+You can also try out this project in this server, in the [#italiano](https://discord.com/channels/1269313927150309491/1270821127001866311) channel! Click the image below to join.
+
+[![Discord Banner 2](https://discord.com/api/guilds/1269313927150309491/widget.png?style=banner2)](https://discord.gg/yUWmzQBV4P)
 
 # Donate
 
