@@ -2,3 +2,4 @@ colorama
 groq
 python-dotenv
 asyncio
+openai
