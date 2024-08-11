@@ -169,7 +169,9 @@ async def generate_response_and_reply(message, prompt, history):
         chunk = chunk.replace(
             "@", "@\u200b"
         )  # Prevent mentions by replacing them with a hidden whitespace
-        print(f'{datetime.now().strftime("[%H:%M:%S]")} {prompt}')
+        print(
+            f'{datetime.now().strftime("[%H:%M:%S]")} {message.author.name}: {prompt}'
+        )
         print(
             f'{datetime.now().strftime("[%H:%M:%S]")} Responding to {message.author.name}: {chunk}'
         )
