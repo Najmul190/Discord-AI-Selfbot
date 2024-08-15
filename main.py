@@ -27,6 +27,8 @@ bot.active_channels = set()
 bot.ignore_users = []
 bot.message_history = {}
 bot.paused = False
+bot.realistic_typing = os.getenv("REALISTIC_TYPING").lower()
+
 MAX_HISTORY = 30
 
 
@@ -178,7 +180,11 @@ async def generate_response_and_reply(message, prompt, history):
         print_separator()
 
         try:
-            await message.reply(chunk)
+            async with message.channel.typing():
+                if bot.realistic_typing == "true":
+                    await asyncio.sleep(int(len(chunk) / 15))
+
+                await message.reply(chunk)
         except Exception as e:
             print(f"Error sending message: {e}")
 
@@ -209,13 +215,6 @@ async def on_message(message):
                 f"<@{mention.id}>", f"@{mention.display_name}"
             )
 
-        #################### Put a # before each line ######################
-        # for t in TRIGGER:
-        #     message.content = re.sub(
-        #         rf"\b{t}\b", "ChatGPT", message.content, flags=re.IGNORECASE
-        #     )
-        ####################################################################
-
         author_id = str(message.author.id)
         update_message_history(author_id, message.content)
 
@@ -229,13 +228,11 @@ async def on_message(message):
                 {"role": "user", "content": message.content}
             )
             history = bot.message_history[key]
+
             prompt = message.content
 
-            async with message.channel.typing():
-                response = await generate_response_and_reply(message, prompt, history)
-                bot.message_history[key].append(
-                    {"role": "assistant", "content": response}
-                )
+            response = await generate_response_and_reply(message, prompt, history)
+            bot.message_history[key].append({"role": "assistant", "content": response})
 
 
 async def load_extensions():
@@ -249,4 +246,4 @@ async def load_extensions():
 
 if __name__ == "__main__":
     asyncio.run(load_extensions())
-    asyncio.run(bot.start(TOKEN))
+    asyncio.run(bot.run(token=TOKEN, log_handler=None))
