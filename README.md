@@ -17,13 +17,13 @@ This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Dis
 
 # Preview of text responses:
 
-![image](https://cdn.discordapp.com/attachments/1241152501336772709/1267566207247188079/image.png?ex=66a94086&is=66a7ef06&hm=11cac192c2a18be7c3154a6154e841c6adffb64ff577a3f78e961b3055f00b50&)
+![image](https://i.imgur.com/MdfzY9C.png)
 
-![image](https://cdn.discordapp.com/attachments/1241152501336772709/1267566298200543232/image.png?ex=66b4755b&is=66b323db&hm=4d22621aae21c8c55f27dd498119402128605cd0986940c8c6f1d2bf3caf548e&)
+![image](https://i.imgur.com/AMnx8a9.png)
 
 # Preview of Analyse command:
 
-![image](https://cdn.discordapp.com/attachments/1241152501336772709/1267572436925284414/image.png?ex=66b47b13&is=66b32993&hm=a960cc4b4bad7e56178acaf3ed2e7c9b1a0effdae52a9bf1285a543d128e3175&)
+![image](https://i.imgur.com/rn4Ru09.png)
 
 > Note: This analysis is based on the user's message history and is not 100% accurate. It is just for fun and should not be taken seriously.
 
@@ -75,21 +75,36 @@ cd Discord-AI-Selfbot
 -   Type a message in any chat, or change server
 -   Find one of the following headers: `"messages?limit=50"`, `"science"` or `"preview"` under `"Name"` and click on it
 -   Scroll down until you find `"Authorization"` under `"Request Headers"`
--   Copy the value which is yor token
+-   Copy the value which is your token
 
 ### Step 4: Getting a Groq API key
 
 -   Go to [Groq](https://console.groq.com/keys) and sign up for a free account
 -   Get your API key, which should look like `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` (this is an example key, it isn't real)
 
-### Step 5: Rename `example.env` to `.env` and put your Discord token and Groq API key in. It'll look like this:
+### Step 5: Turn on "Show file extensions" in Windows Explorer and rename `example.env` to `.env`, then put your Discord token and Groq API key in. It'll look like this:
 
 ```
+# Token of the selfbot
 DISCORD_TOKEN=TOKEN_GOES_HERE
+
+# Your API Key for GROQ API (https://console.groq.com/keys)
 GROQ_API_KEY=GROQ_API_KEY_GOES_HERE
+
+# Your API Key for OpenAI (https://platform.openai.com/api_keys) (Optional - Leave blank to use free API)
+OPENAI_API_KEY=
+
+# Owner ID of your account (can't be same as bot's ID)
 OWNER_ID=ID_OF_YOUR_MAIN_DISCORD_ACCOUNT
+
+# The word you want the AI to respond to (e.g: TRIGGER=John)
 TRIGGER=WORD_YOU_WANT_TO_TRIGGER_BOT_WITH
+
+# Prefix you want bot commands to be triggered with
 PREFIX=~
+
+# Realistic Typing - If set to true, the bot will type for a realistic(ish) amount of time before sending a message
+REALISTIC_TYPING=false
 ```
 
 > The `OWNER_ID` is the ID of your main Discord account, which will be the only account allowed to use important commands, such as toggleactive, wipe, etc.
