@@ -82,44 +82,18 @@ cd Discord-AI-Selfbot
 -   Go to [Groq](https://console.groq.com/keys) and sign up for a free account
 -   Get your API key, which should look like `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` (this is an example key, it isn't real)
 
-### Step 5: Turn on "Show file extensions" in Windows Explorer and rename `example.env` to `.env`, then put your Discord token and Groq API key in. It'll look like this:
-
-```
-# Token of the selfbot
-DISCORD_TOKEN=TOKEN_GOES_HERE
-
-# Your API Key for GROQ API (https://console.groq.com/keys)
-GROQ_API_KEY=GROQ_API_KEY_GOES_HERE
-
-# Your API Key for OpenAI (https://platform.openai.com/api_keys) (Optional - Leave blank to use free API)
-OPENAI_API_KEY=
-
-# Owner ID of your account (can't be same as bot's ID)
-OWNER_ID=ID_OF_YOUR_MAIN_DISCORD_ACCOUNT
-
-# The word you want the AI to respond to (e.g: TRIGGER=John)
-TRIGGER=WORD_YOU_WANT_TO_TRIGGER_BOT_WITH
-
-# Prefix you want bot commands to be triggered with
-PREFIX=~
-
-# Realistic Typing - If set to true, the bot will type for a realistic(ish) amount of time before sending a message
-REALISTIC_TYPING=false
-```
-
-> The `OWNER_ID` is the ID of your main Discord account, which will be the only account allowed to use important commands, such as toggleactive, wipe, etc.
-
-### Step 6: Install all the dependencies and run the bot
+### Step 5: Install all the dependencies and run the bot
 
 Windows:
 
--   Simply open `run.bat` if you're on Windows. This will install all pre-requisites and run the bot as well.
+-   Simply open `run.bat` if you're on Windows. This will install all pre-requisites, guide you through the process of setting up the bot and run it for you.
 
 -   If `run.bat` doesn't work, then open CMD and run `cd Discord-AI-Selfbot` to change directory to the bot files directory
 -   Create a virtual environment by running `python -m venv bot-env`
 -   Activate the virtual environment by running `bot-env\Scripts\activate.bat`
 -   Run `pip install -r requirements.txt` to install all the dependencies
 -   Install discord.py-self using `pip install -U discord.py-self`
+-   Fill out example.env with your own credentials and rename it to .env
 -   Run the bot using `python3 main.py`
 
 Linux:
@@ -129,6 +103,7 @@ Linux:
 -   Activate the virtual environment by running `source bot-env/bin/activate`
 -   Run `pip install -r requirements.txt` to install all the dependencies
 -   Install discord.py-self using `pip install -U discord.py-self`
+-   Fill out example.env with your own credentials and rename it to .env
 -   Run the bot using `python3 main.py`
 
 # How to talk to the bot
