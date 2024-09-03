@@ -28,6 +28,7 @@ bot.ignore_users = []
 bot.message_history = {}
 bot.paused = False
 bot.realistic_typing = os.getenv("REALISTIC_TYPING").lower()
+bot.anti_age_ban = os.getenv("ANTI_AGE_BAN").lower()
 
 MAX_HISTORY = 30
 
@@ -81,6 +82,10 @@ async def on_ready():
                 print(f"- #{channel.name} in {channel.guild.name}")
             except Exception:
                 pass
+
+    print(
+        f"\n{Fore.LIGHTBLACK_EX}Join the Discord server for support and news on updates: https://discord.gg/yUWmzQBV4P{Style.RESET_ALL}"
+    )
 
     print_separator()
 
@@ -171,6 +176,15 @@ async def generate_response_and_reply(message, prompt, history):
         chunk = chunk.replace(
             "@", "@\u200b"
         )  # Prevent mentions by replacing them with a hidden whitespace
+
+        if bot.anti_age_ban == "true":
+            chunk = re.sub(
+                r"(?<!\d)([0-9]|1[0-2])(?!\d)|\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\b",
+                "\u200b",
+                chunk,
+                flags=re.IGNORECASE,
+            )
+
         print(
             f'{datetime.now().strftime("[%H:%M:%S]")} {message.author.name}: {prompt}'
         )
