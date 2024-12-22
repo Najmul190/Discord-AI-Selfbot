@@ -242,8 +242,7 @@ async def on_message(message):
         if (
             message.channel.id in bot.active_channels
             or (isinstance(message.channel, discord.GroupChannel) and bot.allow_gc)
-            or isinstance(message.channel, discord.DMChannel)
-            and bot.allow_dm
+            or (isinstance(message.channel, discord.DMChannel) and bot.allow_dm)
         ):
             key = f"{message.author.id}-{message.channel.id}"
             if key not in bot.message_history:
