@@ -3,6 +3,7 @@ import asyncio
 import discord
 import shutil
 import re
+import random
 
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -194,9 +195,15 @@ async def generate_response_and_reply(message, prompt, history):
         print_separator()
 
         try:
+            if bot.realistic_typing == "true":
+                await asyncio.sleep(random.randint(1, 5))
+
             async with message.channel.typing():
                 if bot.realistic_typing == "true":
-                    await asyncio.sleep(int(len(chunk) / 15))
+                    characters_per_second = random.uniform(5.0, 6.0)
+                    await asyncio.sleep(
+                        int(len(chunk) / characters_per_second)
+                    )  # around 50-70 wpm which is average typing speed
 
                 await message.reply(chunk)
         except Exception as e:
@@ -232,8 +239,11 @@ async def on_message(message):
         author_id = str(message.author.id)
         update_message_history(author_id, message.content)
 
-        if message.channel.id in bot.active_channels or (
-            isinstance(message.channel, discord.GroupChannel) and bot.allow_gc
+        if (
+            message.channel.id in bot.active_channels
+            or (isinstance(message.channel, discord.GroupChannel) and bot.allow_gc)
+            or isinstance(message.channel, discord.DMChannel)
+            and bot.allow_dm
         ):
             key = f"{message.author.id}-{message.channel.id}"
             if key not in bot.message_history:
