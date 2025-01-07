@@ -166,7 +166,9 @@ def update_message_history(author_id, message_content):
 
 
 async def generate_response_and_reply(message, prompt, history):
-    response = await generate_response(prompt, instructions, history)
+    async with message.channel.typing():
+        response = await generate_response(prompt, instructions, history)
+
     chunks = split_response(response)
 
     if len(chunks) > 3:
@@ -198,14 +200,13 @@ async def generate_response_and_reply(message, prompt, history):
             if bot.realistic_typing == "true":
                 await asyncio.sleep(random.randint(1, 5))
 
-            async with message.channel.typing():
-                if bot.realistic_typing == "true":
+                async with message.channel.typing():
                     characters_per_second = random.uniform(5.0, 6.0)
                     await asyncio.sleep(
                         int(len(chunk) / characters_per_second)
                     )  # around 50-70 wpm which is average typing speed
 
-                await message.reply(chunk)
+            await message.reply(chunk)
         except Exception as e:
             print(f"Error sending message: {e}")
 

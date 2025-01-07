@@ -55,23 +55,29 @@ class Management(commands.Cog):
             await ctx.send(f"Error: {e}")
 
     @commands.command(name="toggleactive", description="Toggle active channels")
-    async def toggleactive(self, ctx):
+    async def toggleactive(self, ctx, channel: discord.TextChannel = None):
         if ctx.author.id == self.bot.owner_id:
-            channel_id = ctx.channel.id
+            if channel is None:
+                channel = ctx.channel
+                channel_id = channel.id
+            else:
+                channel = await self.bot.fetch_channel(channel.id)
+                channel_id = channel.id
+
             if channel_id in self.bot.active_channels:
                 self.bot.active_channels.remove(channel_id)
                 with open("config/channels.txt", "w") as f:
                     for id in self.bot.active_channels:
                         f.write(str(id) + "\n")
                 await ctx.send(
-                    f"{'This DM' if isinstance(ctx.channel, discord.DMChannel) else 'This group' if isinstance(ctx.channel, discord.GroupChannel) else ctx.channel.mention} has been removed from the list of active channels."
+                    f"{'This DM' if isinstance(ctx.channel, discord.DMChannel) else 'This group' if isinstance(ctx.channel, discord.GroupChannel) else channel.mention} has been removed from the list of active channels."
                 )
             else:
                 self.bot.active_channels.add(channel_id)
                 with open("config/channels.txt", "a") as f:
                     f.write(str(channel_id) + "\n")
                 await ctx.send(
-                    f"{'This DM' if isinstance(ctx.channel, discord.DMChannel) else 'This group' if isinstance(ctx.channel, discord.GroupChannel) else ctx.channel.mention} has been added to the list of active channels."
+                    f"{'This DM' if isinstance(ctx.channel, discord.DMChannel) else 'This group' if isinstance(ctx.channel, discord.GroupChannel) else channel.mention} has been added to the list of active channels."
                 )
 
     # @commands.command(

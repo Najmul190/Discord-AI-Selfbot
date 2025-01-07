@@ -4,7 +4,7 @@ This is a [Python](https://www.python.org)-based Discord selfbot using the `disc
 
 > There is always the slight risk of a ban when using selfbots, so make sure to use this selfbot on an account you don't mind losing, but the risk is incredibly low and I have used it for over a year without any issues.
 
-This bot was originally [Discord-AI-Chatbot](https://github.com/mishalhossin/Discord-AI-Chatbot) by [MishalHossin](https://github.com/mishalhossin/) but was heavily edited by [Najmul190](https://github.com/najmul190) to work as a selfbot rather than a Discord bot.
+This bot was originally [Discord-AI-Chatbot](https://github.com/mishl-dev/Discord-AI-Chatbot) by [MishalHossin](https://github.com/mishl-dev/) but was heavily edited by [Najmul190](https://github.com/najmul190) to work as a selfbot rather than a Discord bot.
 
 ### <strong> I take no responsibility for any actions taken against your account for using these selfbots, or how users use my open source code.</strong>
 
@@ -108,7 +108,7 @@ Linux:
 
 # How to talk to the bot
 
--   To activate it in a channel use **~toggleactive** in the channel or manually add the channel ID in `channels.txt`
+-   To activate it in a channel use **~toggleactive channelid** (channelid is optional) or manually add the channel ID in `channels.txt`
 -   To see all commands use **~help**
 -   Bear in mind that the bot will only respond to **other accounts** and not itself, including any commands.
 -   You must also set a trigger word within the `.env`, this is the word that the bot will respond to. For example, if you set the trigger word to `John`, people must say "Hey `John`, how are you today?" for the bot to respond.
