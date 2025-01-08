@@ -166,8 +166,7 @@ def update_message_history(author_id, message_content):
 
 
 async def generate_response_and_reply(message, prompt, history):
-    async with message.channel.typing():
-        response = await generate_response(prompt, instructions, history)
+    response = await generate_response(prompt, instructions, history)
 
     chunks = split_response(response)
 
