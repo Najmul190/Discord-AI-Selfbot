@@ -55,13 +55,13 @@ class Management(commands.Cog):
             await ctx.send(f"Error: {e}")
 
     @commands.command(name="toggleactive", description="Toggle active channels")
-    async def toggleactive(self, ctx, channel: discord.TextChannel = None):
+    async def toggleactive(self, ctx, channel=None):
         if ctx.author.id == self.bot.owner_id:
             if channel is None:
                 channel = ctx.channel
                 channel_id = channel.id
             else:
-                channel = await self.bot.fetch_channel(channel.id)
+                channel = await self.bot.fetch_channel(channel)
                 channel_id = channel.id
 
             if channel_id in self.bot.active_channels:
