@@ -23,7 +23,7 @@ def prompt_env_values():
         "Enter your Discord User ID (cannot be same as AI account ID): "
     ).strip()
     trigger = input(
-        "Enter the trigger word for the AI (You can add numerous by splitting them with commas - e.g: Trigger1,Trigger2,Trigger3): "
+        "Enter the trigger word for the AI (You can add multiple by splitting them with commas - e.g: Trigger1,Trigger2,Trigger3): "
     ).strip()
     instructions = input(
         "Enter your custom instructions for the AI (Optional - Press Enter to use default): "
