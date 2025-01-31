@@ -1,3 +1,4 @@
+discord.py-self
 colorama
 curl_cffi
 fake_useragent

@@ -206,10 +206,19 @@ async def generate_response_and_reply(message, prompt, history):
                     )  # around 50-70 wpm which is average typing speed
 
             await message.reply(chunk)
+        except discord.errors.HTTPException as e:
+            print(
+                f"{datetime.now().strftime('[%H:%M:%S]')} Error replying to message, original message may have been deleted."
+            )
+            print_separator()
+        except discord.errors.Forbidden:
+            print(
+                f"{datetime.now().strftime('[%H:%M:%S]')} Missing permissions to send message, bot may be muted."
+            )
+            print_separator()
         except Exception as e:
-            print(f"Error sending message: {e}")
-
-        await asyncio.sleep(1.5)
+            print(f"{datetime.now().strftime('[%H:%M:%S]')} Error: {e}")
+            print_separator()
 
     return response
 
