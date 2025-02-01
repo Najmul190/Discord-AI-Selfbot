@@ -291,4 +291,4 @@ async def load_extensions():
 
 
 if __name__ == "__main__":
-    bot.run(TOKEN)
+    bot.run(TOKEN, log_handler=None)
