@@ -3,7 +3,7 @@ import os
 import sys
 
 from discord.ext import commands
-from main import clear_console
+from utils.helpers import clear_console
 
 
 class Management(commands.Cog):

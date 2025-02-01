@@ -4,11 +4,13 @@ import discord
 import shutil
 import re
 import random
+import sys
 
 from dotenv import load_dotenv
 from discord.ext import commands
 from utils.ai import generate_response
 from utils.split_response import split_response
+from utils.helpers import clear_console
 from colorama import init, Fore, Style
 from datetime import datetime
 
@@ -32,10 +34,6 @@ bot.realistic_typing = os.getenv("REALISTIC_TYPING").lower()
 bot.anti_age_ban = os.getenv("ANTI_AGE_BAN").lower()
 
 MAX_HISTORY = 30
-
-
-def clear_console():
-    os.system("cls" if os.name == "nt" else "clear")
 
 
 def get_terminal_size():
@@ -89,6 +87,11 @@ async def on_ready():
     )
 
     print_separator()
+
+
+@bot.event
+async def setup_hook():
+    await load_extensions()  # this loads the cogs on bot startup
 
 
 if os.path.exists("config/instructions.txt"):
@@ -267,15 +270,25 @@ async def on_message(message):
             bot.message_history[key].append({"role": "assistant", "content": response})
 
 
+def resource_path(relative_path):  # needed to run as an exe using pyinstaller
+    if getattr(sys, "frozen", False):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+
 async def load_extensions():
-    for filename in os.listdir("./cogs"):
+    cogs_dir = resource_path("cogs")
+    for filename in os.listdir(cogs_dir):
         if filename.endswith(".py"):
+            cog_name = f"cogs.{filename[:-3]}"  # Remove the .py extension
             try:
-                await bot.load_extension(f"cogs.{filename[:-3]}")
+                print(f"Loading cog: {cog_name}")
+                await bot.load_extension(cog_name)
             except Exception as e:
-                print(f"Failed to load extension {filename}. Error: {e}")
+                print(f"Error loading cog {cog_name}: {e}")
 
 
 if __name__ == "__main__":
-    asyncio.run(load_extensions())
-    asyncio.run(bot.run(token=TOKEN, log_handler=None))
+    bot.run(TOKEN)
