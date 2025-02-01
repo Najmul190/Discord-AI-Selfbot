@@ -9,10 +9,6 @@ if not exist bot-env (
     pip install curl_cffi fake_useragent httpx asyncio python-dotenv pyYAML requests flask groq openai colorama discord.py-self
     
     echo Installed.
-) 
-if not exist config/.env (
-    echo .env file not found. Generating...
-    python "setup.py"
 )
 
 call .\bot-env\Scripts\activate.bat

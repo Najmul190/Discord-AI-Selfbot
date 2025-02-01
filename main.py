@@ -79,6 +79,19 @@ async def on_ready():
         f"AI Selfbot successfully logged in as {Fore.CYAN}{bot.user.name} ({bot.selfbot_id}){Style.RESET_ALL}.\n"
     )
 
+    try:
+        owner = bot.fetch_user(bot.owner_id)
+    except discord.errors.NotFound:
+        clear_console()
+
+        print(
+            f"{Fore.RED}Owner ID not found. Please provide a valid owner ID in config/.env{Style.RESET_ALL}"
+        )
+
+        exit(1)
+
+    print(f"Owner ID: {Fore.CYAN}{owner.name}({bot.owner_id}){Style.RESET_ALL}")
+
     print("Active in the following channels:")
 
     for channel_id in bot.active_channels:
