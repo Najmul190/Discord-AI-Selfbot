@@ -24,7 +24,7 @@ Bot Commands:
 {prefix}analyse [user] - Analyze a user's message history and provides a psychological profile
 {prefix}wipe - Clears history of the bot
 {prefix}ping - Shows the bot's latency
-{prefix}toggleactive - Toggle the current channel to the list of active channels
+{prefix}toggleactive [id] - Toggle the id of a channel or the current channel to the list of active channels
 {prefix}toggledm - Toggle if the bot should be active in DM's or not
 {prefix}togglegc - Toggle if the bot should be active in group chats or not
 {prefix}ignore [user] - Stop a user from using the bot
