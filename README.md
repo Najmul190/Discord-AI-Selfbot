@@ -4,16 +4,13 @@ This is a [Python](https://www.python.org)-based Discord selfbot using the `disc
 
 > There is always the slight risk of a ban when using selfbots, so make sure to use this selfbot on an account you don't mind losing, but the risk is incredibly low and I have used it for over a year without any issues.
 
-This bot was originally [Discord-AI-Chatbot](https://github.com/mishl-dev/Discord-AI-Chatbot) by [MishalHossin](https://github.com/mishl-dev/) but was heavily edited by [Najmul190](https://github.com/najmul190) to work as a selfbot rather than a Discord bot.
-
 ### <strong> I take no responsibility for any actions taken against your account for using these selfbots, or how users use my open source code.</strong>
 
 ### <strong>Using this on a user account is prohibited by the [Discord TOS](https://discord.com/terms) and can lead to your account getting banned in _very_ rare cases.</strong>
 
-<p float="left">
+<center>
   <img style="vertical-align: top;" src="https://discord.c99.nl/widget/theme-4/451627446941515817.png"/>
-  <img src="https://lanyard.cnrad.dev/api/1025245410224263258?theme=dark&bg=171515&borderRadius=5px&animated=true&idleMessage=15%20year%20old%20solo%20dev" al/> 
-</p>
+  </center>
 
 # Preview of text responses:
 
@@ -46,7 +43,7 @@ This bot was originally [Discord-AI-Chatbot](https://github.com/mishl-dev/Discor
 -   analyse [user] - Analyze a user's message history and provides a - gical profile
 -   wipe - Clears history of the bot
 -   ping - Shows the bot's latency
--   toggleactive - Toggle the current channel to the list of active channels
+-   toggleactive [channelID] - Toggle the current channel to the list of active channels
 -   toggledm - Toggle if the bot should be active in DM's or not
 -   togglegc - Toggle if the bot should be active in group chats or not
 -   ignore [user] - Stop a user from using the bot
@@ -114,7 +111,7 @@ Linux:
 
 # Changing the Personality of the bot
 
-To change the personality of the bot and set custom instructions, simply go into the `Config` folder and edit the default instructions in `instructions.txt` to whatever you want! 
+To change the personality of the bot and set custom instructions, simply go into the `config` folder and edit the default instructions in `instructions.txt` to whatever you want! 
 
 # Support + Try out the bot!
 
