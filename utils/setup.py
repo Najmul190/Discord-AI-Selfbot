@@ -55,7 +55,7 @@ def prompt_env_values():
     clear_console()
 
     trigger = input(
-        "Enter the trigger word for the AI (You can add multiple by splitting them with commas - e.g: Trigger1,Trigger2,Trigger3): "
+        "Enter the trigger word for the AI (Add multiple by splitting them with commas - e.g: Trigger1,Trigger2,Trigger3): "
     ).strip()
 
     while not trigger:
