@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from discord.ext import commands
 from utils.ai import generate_response
 from utils.split_response import split_response
-from utils.helpers import clear_console
+from utils.helpers import clear_console, resource_path
 from colorama import init, Fore, Style
 from datetime import datetime
 
@@ -34,6 +34,13 @@ bot.realistic_typing = os.getenv("REALISTIC_TYPING").lower()
 bot.anti_age_ban = os.getenv("ANTI_AGE_BAN").lower()
 
 MAX_HISTORY = 30
+
+
+def check_env():
+    env_path = resource_path("config/.env")
+    if not os.path.exists(env_path):
+        print("config/.env not found! Running setup...")
+        import utils.setup
 
 
 def get_terminal_size():
@@ -270,14 +277,6 @@ async def on_message(message):
             bot.message_history[key].append({"role": "assistant", "content": response})
 
 
-def resource_path(relative_path):  # needed to run as an exe using pyinstaller
-    if getattr(sys, "frozen", False):
-        base_path = sys._MEIPASS
-    else:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-
-
 async def load_extensions():
     cogs_dir = resource_path("cogs")
     for filename in os.listdir(cogs_dir):
@@ -291,4 +290,5 @@ async def load_extensions():
 
 
 if __name__ == "__main__":
+    check_env()
     bot.run(TOKEN, log_handler=None)

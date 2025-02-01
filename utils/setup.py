@@ -1,39 +1,84 @@
 import os
-
-
-def clear_console():
-    """Clear the console screen."""
-    os.system("cls" if os.name == "nt" else "clear")
+from utils.helpers import clear_console, resource_path
 
 
 def prompt_env_values():
-    """Prompt user for .env configuration values."""
     clear_console()
+
     print("Configuring environment variables...")
     discord_token = input(
         "Enter the Discord Token of the account you'd like to run the AI on: "
     ).strip()
+
+    while not discord_token:
+        print("Discord Token cannot be empty!")
+        discord_token = input(
+            "Enter the Discord Token of the account you'd like to run the AI on: "
+        ).strip()
+
+    clear_console()
+
     groq_api_key = input(
-        "Enter your Groq API Key (https://console.groq.com/keys): "
+        "Enter your Groq API Key (https://console.groq.com/keys) (Press Enter to skip if you're using ChatGPT): "
     ).strip()
+
+    while groq_api_key and len(groq_api_key) < 10:
+        print("Invalid Groq API Key!")
+        groq_api_key = input(
+            "Enter your Groq API Key (https://console.groq.com/keys) (Press Enter to skip if you're using ChatGPT): "
+        ).strip()
+
+    clear_console()
+
     openai_api_key = input(
         "Enter your OpenAI API Key (Optional - Press Enter to skip): "
     ).strip()
+
+    while openai_api_key and len(openai_api_key) < 10:
+        print("Invalid OpenAI API Key!")
+        openai_api_key = input(
+            "Enter your OpenAI API Key (Optional - Press Enter to skip): "
+        ).strip()
+
+    clear_console()
+
     owner_id = input(
         "Enter your Discord User ID (cannot be same as AI account ID): "
     ).strip()
+
+    while not owner_id:
+        print("Owner ID cannot be empty!")
+        owner_id = input(
+            "Enter your Discord User ID (cannot be same as AI account ID): "
+        ).strip()
+
+    clear_console()
+
     trigger = input(
         "Enter the trigger word for the AI (You can add multiple by splitting them with commas - e.g: Trigger1,Trigger2,Trigger3): "
     ).strip()
+
+    while not trigger:
+        print("Trigger word cannot be empty!")
+        trigger = input(
+            "Enter the trigger word for the AI (Add multiple by splitting them with commas - e.g: Trigger1,Trigger2,Trigger3): "
+        ).strip()
+
+    clear_console()
+
     instructions = input(
         "Enter your custom instructions for the AI (Optional - Press Enter to use default): "
     ).strip()
 
+    clear_console()
+
     if not openai_api_key:
         openai_api_key = ""
 
-    # Write the configuration values to the .env file
-    with open("config/.env", "w") as env_file:
+    env_path = resource_path("config/.env")
+    os.makedirs(os.path.dirname(env_path), exist_ok=True)
+
+    with open(env_path, "w") as env_file:
         env_file.write("# # Token of the selfbot\n")
         env_file.write(f"DISCORD_TOKEN={discord_token}\n")
 
@@ -66,12 +111,13 @@ def prompt_env_values():
         env_file.write(
             "\n# Anti Age Ban Measures - The bot will attempt to avoid being banned by Discord by filtering out numbers below 13\n# This is a strict method, as it removes ANY number below 13, including dates, times, etc.\n"
         )
-        env_file.write("ANTI_AGE_BAN=true\n")
+        env_file.write("ANTI_AGE_BAN=false\n")
         env_file.write(
             "\n\n# For any help or support, please join the support server: https://discord.gg/yUWmzQBV4P"
         )
 
-    with open("config/instructions.txt", "w") as instructions_file:
+    instructions_path = resource_path("config/instructions.txt")
+    with open(instructions_path, "w") as instructions_file:
         if instructions:
             instructions_file.write(instructions)
         else:
@@ -82,15 +128,12 @@ def prompt_env_values():
     print(".env file created with your configurations in config/.env.")
 
 
-def main():
-    """Main script execution."""
-
-    # Prompt user for .env configuration if .env file does not exist
-    if not os.path.exists("config/.env"):
+def run_setup():
+    try:
         prompt_env_values()
-    else:
-        print(".env file already exists. Skipping creation.")
+    except Exception as e:
+        print(f"An error occurred during setup: {e}")
+        print("Please try again or contact support.")
 
 
-if __name__ == "__main__":
-    main()
+run_setup()
