@@ -1,12 +1,10 @@
 discord.py-self
 colorama
 curl_cffi
-fake_useragent
 httpx
 asyncio
 python-dotenv
 pyYAML
 requests
-flask
 groq
 openai
