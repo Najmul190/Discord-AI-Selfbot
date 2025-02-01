@@ -9,6 +9,13 @@ def clear_console():
 
 def resource_path(relative_path):
     if getattr(sys, "frozen", False):
-        return os.path.join(os.path.dirname(sys.executable), relative_path)
+        base_path = os.path.dirname(sys.executable)
     else:
-        return os.path.join(os.path.abspath("."), relative_path)
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+
+def get_env_path():
+    if getattr(sys, "frozen", False):
+        return os.path.join(os.path.dirname(sys.executable), "config/.env")
+    return os.path.join(os.path.abspath("."), "config/.env")

@@ -4,8 +4,9 @@ import discord
 import shutil
 import re
 import random
+import sys
 
-from utils.helpers import clear_console, resource_path
+from utils.helpers import clear_console, resource_path, get_env_path
 
 
 def check_env():
@@ -24,7 +25,10 @@ from utils.split_response import split_response
 from colorama import init, Fore, Style
 from datetime import datetime
 
-load_dotenv(dotenv_path="config/.env")
+
+env_path = get_env_path()
+
+load_dotenv(dotenv_path=env_path)
 init()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -104,8 +108,9 @@ async def setup_hook():
     await load_extensions()  # this loads the cogs on bot startup
 
 
-if os.path.exists("config/instructions.txt"):
-    with open("config/instructions.txt", "r", encoding="utf-8") as file:
+instructions_path = resource_path("config/instructions.txt")
+if os.path.exists(instructions_path):
+    with open(instructions_path, "r", encoding="utf-8") as file:
         instructions = file.read()
 else:
     print(
@@ -113,24 +118,28 @@ else:
     )
     exit(1)
 
-if os.path.exists("config/channels.txt"):
-    with open("config/channels.txt", "r") as f:
+channels_path = resource_path("config/channels.txt")
+if os.path.exists(channels_path):
+    with open(channels_path, "r") as f:
         for line in f:
             channel_id = int(line.strip())
             bot.active_channels.add(channel_id)
 else:
     print("Active channels file not found. Creating a new one.")
-    with open("config/channels.txt", "w"):
+    os.makedirs(os.path.dirname(channels_path), exist_ok=True)
+    with open(channels_path, "w"):
         pass
 
-if os.path.exists("config/ignoredusers.txt"):
-    with open("config/ignoredusers.txt", "r") as f:
+ignored_users_path = resource_path("config/ignoredusers.txt")
+if os.path.exists(ignored_users_path):
+    with open(ignored_users_path, "r") as f:
         for line in f:
             user_id = int(line.strip())
             bot.ignore_users.append(user_id)
 else:
     print("Ignored users file not found. Creating a new one.")
-    with open("config/ignoredusers.txt", "w"):
+    os.makedirs(os.path.dirname(ignored_users_path), exist_ok=True)
+    with open(ignored_users_path, "w"):
         pass
 
 
@@ -281,10 +290,18 @@ async def on_message(message):
 
 
 async def load_extensions():
-    cogs_dir = resource_path("cogs")
+    if getattr(sys, "frozen", False):
+        cogs_dir = os.path.join(sys._MEIPASS, "cogs")
+    else:
+        cogs_dir = os.path.join(os.path.abspath("."), "cogs")
+
+    if not os.path.exists(cogs_dir):
+        print(f"Warning: Cogs directory not found at {cogs_dir}. Skipping cog loading.")
+        return
+
     for filename in os.listdir(cogs_dir):
         if filename.endswith(".py"):
-            cog_name = f"cogs.{filename[:-3]}"  # Remove the .py extension
+            cog_name = f"cogs.{filename[:-3]}"
             try:
                 print(f"Loading cog: {cog_name}")
                 await bot.load_extension(cog_name)

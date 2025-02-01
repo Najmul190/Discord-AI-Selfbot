@@ -3,8 +3,10 @@ from openai import AsyncOpenAI as OpenAI
 from os import getenv
 from dotenv import load_dotenv
 from sys import exit
+from utils.helpers import get_env_path
 
-load_dotenv(dotenv_path="config/.env")
+env_path = get_env_path()
+load_dotenv(dotenv_path=env_path)
 
 if getenv("OPENAI_API_KEY"):
     client = OpenAI(api_key=getenv("OPENAI_API_KEY"))
