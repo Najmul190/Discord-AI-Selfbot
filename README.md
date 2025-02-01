@@ -8,9 +8,9 @@ This is a [Python](https://www.python.org)-based Discord selfbot using the `disc
 
 ### <strong>Using this on a user account is prohibited by the [Discord TOS](https://discord.com/terms) and can lead to your account getting banned in _very_ rare cases.</strong>
 
-<center>
-  <img style="vertical-align: top;" src="https://discord.c99.nl/widget/theme-4/451627446941515817.png"/>
-  </center>
+Project made by: 
+
+<img style="vertical-align: center;" src="https://discord.c99.nl/widget/theme-4/451627446941515817.png"/>
 
 # Preview of text responses:
 
