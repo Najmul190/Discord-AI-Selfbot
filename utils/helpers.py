@@ -9,7 +9,6 @@ def clear_console():
 
 def resource_path(relative_path):
     if getattr(sys, "frozen", False):
-        base_path = sys._MEIPASS
+        return os.path.join(os.path.dirname(sys.executable), relative_path)
     else:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
+        return os.path.join(os.path.abspath("."), relative_path)
