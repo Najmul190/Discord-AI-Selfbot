@@ -8,6 +8,8 @@ if not exist bot-env (
     call .\bot-env\Scripts\activate.bat
     pip install curl_cffi fake_useragent httpx asyncio python-dotenv pyYAML requests flask groq openai colorama discord.py-self
     
+    cls
+
     echo Installed.
 )
 
