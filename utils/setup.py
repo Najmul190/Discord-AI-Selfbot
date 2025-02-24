@@ -12,9 +12,6 @@ init()
 
 
 def validate_token(token):
-    if not re.match(r"[\w-]{24}\.[\w-]{6}\.[\w-]{27}", token):
-        return False
-
     headers = {"Authorization": token}
     try:
         r = requests.get("https://discord.com/api/v10/users/@me", headers=headers)
@@ -42,7 +39,10 @@ def validate_api_key(api_key, provider="openai"):
 
 def get_input(prompt, validator=None, default=None, password=False):
     while True:
-        if default is not None and prompt == "Enter error webhook URL (optional - press enter to skip)":
+        if (
+            default is not None
+            and prompt == "Enter error webhook URL (optional - press enter to skip)"
+        ):
             user_input = input(f"{prompt} (default: {default}): ").strip()
             if not user_input:
                 return default
