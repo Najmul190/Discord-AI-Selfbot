@@ -4,6 +4,7 @@ import sys
 import subprocess
 import yaml
 import re
+import asyncio
 
 from discord.ext import commands
 from utils.helpers import load_instructions, load_config, resource_path
@@ -161,13 +162,19 @@ class Management(commands.Cog):
 
             if getattr(sys, "frozen", False):
                 exe_path = sys.executable
-                subprocess.Popen(exe_path)
+
+                os.startfile(exe_path)
+
+                await asyncio.sleep(3)
+
+                await ctx.bot.close()
+                sys.exit(0)
             else:
                 python = sys.executable
                 subprocess.Popen([python] + sys.argv)
 
-            await ctx.bot.close()
-            sys.exit(0)
+                await ctx.bot.close()
+                sys.exit(0)
 
     @commands.command(
         name="shutdown",
