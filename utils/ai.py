@@ -1,3 +1,5 @@
+import sys
+
 from groq import AsyncGroq
 from openai import AsyncOpenAI as OpenAI
 from os import getenv
@@ -25,7 +27,7 @@ def init_ai():
         model = config["bot"]["groq_model"]
     else:
         print("No API keys found, exiting.")
-        exit(1)
+        sys.exit(1)
 
 
 async def generate_response(prompt, instructions, history=None):

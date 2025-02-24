@@ -33,7 +33,7 @@ def load_config():
         print(
             "Config file not found. Please provide a config file in config/config.yaml"
         )
-        exit(1)
+        sys.exit(1)
 
 
 def load_instructions():
