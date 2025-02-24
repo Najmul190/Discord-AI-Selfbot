@@ -305,30 +305,39 @@ async def generate_response_and_reply(message, prompt, history, image_url=None):
                     channel_id = message.channel.id
                     batch_start_time = time.time()
 
-                    while time.time() - batch_start_time <= bot.batch_wait_time:
-                        try:
+                    try:
 
-                            def check(m):
-                                return (
-                                    m.author.id == message.author.id
-                                    and m.channel.id == message.channel.id
-                                )
-
-                            follow_up = await bot.wait_for(
-                                "message",
-                                timeout=bot.batch_wait_time
-                                - (time.time() - batch_start_time),
-                                check=check,
+                        def check(m):
+                            return (
+                                m.author.id == message.author.id
+                                and m.channel.id == message.channel.id
+                                and not m.content.startswith(PREFIX)
                             )
 
-                            if channel_id not in bot.message_queues:
-                                bot.message_queues[channel_id] = deque()
-                                bot.processing_locks[channel_id] = Lock()
+                        while time.time() - batch_start_time <= bot.batch_wait_time:
+                            try:
+                                follow_up = await bot.wait_for(
+                                    "message",
+                                    timeout=bot.batch_wait_time
+                                    - (time.time() - batch_start_time),
+                                    check=check,
+                                )
 
-                            bot.message_queues[channel_id].append(follow_up)
+                                if follow_up.content.startswith(PREFIX):
+                                    await bot.process_commands(follow_up)
+                                    continue
 
-                        except asyncio.TimeoutError:
-                            break
+                                if channel_id not in bot.message_queues:
+                                    bot.message_queues[channel_id] = deque()
+                                    bot.processing_locks[channel_id] = Lock()
+
+                                bot.message_queues[channel_id].append(follow_up)
+
+                            except asyncio.TimeoutError:
+                                break
+
+                    except asyncio.TimeoutError:
+                        break
 
                     if (
                         bot.message_queues[channel_id]
@@ -448,9 +457,10 @@ async def process_message_queue(channel_id):
                     await asyncio.sleep(bot.batch_wait_time)
 
                     while bot.message_queues[channel_id]:
+                        next_message = bot.message_queues[channel_id][0]
                         if (
-                            bot.message_queues[channel_id][0].author.id
-                            == message.author.id
+                            next_message.author.id == message.author.id
+                            and not next_message.content.startswith(PREFIX)
                         ):
                             next_message = bot.message_queues[channel_id].popleft()
                             if next_message.content not in [
