@@ -42,7 +42,7 @@ def validate_api_key(api_key, provider="openai"):
 
 def get_input(prompt, validator=None, default=None, password=False):
     while True:
-        if default is not None:
+        if default is not None and prompt == "Enter error webhook URL (optional - press enter to skip)":
             user_input = input(f"{prompt} (default: {default}): ").strip()
             if not user_input:
                 return default
