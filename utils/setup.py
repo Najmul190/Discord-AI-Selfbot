@@ -42,7 +42,7 @@ def validate_api_key(api_key, provider="openai"):
 
 def get_input(prompt, validator=None, default=None, password=False):
     while True:
-        if default:
+        if default is not None:
             user_input = input(f"{prompt} (default: {default}): ").strip()
             if not user_input:
                 return default
@@ -54,7 +54,7 @@ def get_input(prompt, validator=None, default=None, password=False):
             else:
                 user_input = input(prompt + ": ").strip()
 
-        if not user_input:
+        if not user_input and default is None:
             print(f"{Fore.RED}Input cannot be empty!{Style.RESET_ALL}")
             continue
 
