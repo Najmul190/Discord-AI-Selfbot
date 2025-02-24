@@ -1,14 +1,29 @@
 import discord
 import os
 import sys
+import subprocess
+import yaml
+import re
 
 from discord.ext import commands
-from utils.helpers import clear_console
+from utils.helpers import load_instructions, load_config, resource_path
+from utils.db import (
+    add_ignored_user,
+    remove_ignored_user,
+    remove_channel,
+    add_channel,
+)
 
 
 class Management(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    def save_config(self, new_config):
+        config_path = resource_path("config/config.yaml")
+
+        with open(config_path, "w", encoding="utf-8") as file:
+            yaml.dump(new_config, file, default_flow_style=False, allow_unicode=True)
 
     @commands.command(
         name="pause", description="Pause the bot from producing AI responses."
@@ -24,6 +39,13 @@ class Management(commands.Cog):
     async def toggledm(self, ctx):
         if ctx.author.id == self.bot.owner_id:
             self.bot.allow_dm = not self.bot.allow_dm
+
+            config = load_config()
+
+            config["bot"]["allow_dm"] = self.bot.allow_dm
+
+            self.save_config(config)
+
             await ctx.send(
                 f"DMs are now {'allowed' if self.bot.allow_dm else 'disallowed'} for active channels."
             )
@@ -32,6 +54,13 @@ class Management(commands.Cog):
     async def togglegc(self, ctx):
         if ctx.author.id == self.bot.owner_id:
             self.bot.allow_gc = not self.bot.allow_gc
+
+            config = load_config()
+
+            config["bot"]["allow_gc"] = self.bot.allow_gc
+
+            self.save_config(config)
+
             await ctx.send(
                 f"Group chats are now {'allowed' if self.bot.allow_gc else 'disallowed'} for active channels."
             )
@@ -42,13 +71,15 @@ class Management(commands.Cog):
             if ctx.author.id == self.bot.owner_id:
                 if user.id in self.bot.ignore_users:
                     self.bot.ignore_users.remove(user.id)
-                    with open("config/ignoredusers.txt", "w") as f:
-                        f.write("\n".join(map(str, self.bot.ignore_users)))
+
+                    remove_ignored_user(user.id)
+
                     await ctx.send(f"Unignored {user.name}.")
                 else:
                     self.bot.ignore_users.append(user.id)
-                    with open("config/ignoredusers.txt", "a") as f:
-                        f.write(str(user.id) + "\n")
+
+                    add_ignored_user(user.id)
+
                     await ctx.send(f"Ignoring {user.name}.")
 
         except Exception as e:
@@ -61,30 +92,30 @@ class Management(commands.Cog):
                 channel = ctx.channel
                 channel_id = channel.id
             else:
-                channel = await self.bot.fetch_channel(channel)
-                channel_id = channel.id
+                mention_match = re.match(r"<#(\d+)>", channel)
+                if mention_match:
+                    channel_id = int(mention_match.group(1))
+                else:
+                    channel_id = int(channel)
+
+                try:
+                    channel = await self.bot.fetch_channel(channel_id)
+                except discord.errors.NotFound:
+                    await ctx.send("Channel not found.")
+                    return
 
             if channel_id in self.bot.active_channels:
                 self.bot.active_channels.remove(channel_id)
-                with open("config/channels.txt", "w") as f:
-                    for id in self.bot.active_channels:
-                        f.write(str(id) + "\n")
+                remove_channel(channel_id)
                 await ctx.send(
                     f"{'This DM' if isinstance(ctx.channel, discord.DMChannel) else 'This group' if isinstance(ctx.channel, discord.GroupChannel) else channel.mention} has been removed from the list of active channels."
                 )
             else:
                 self.bot.active_channels.add(channel_id)
-                with open("config/channels.txt", "a") as f:
-                    f.write(str(channel_id) + "\n")
+                add_channel(channel_id)
                 await ctx.send(
                     f"{'This DM' if isinstance(ctx.channel, discord.DMChannel) else 'This group' if isinstance(ctx.channel, discord.GroupChannel) else channel.mention} has been added to the list of active channels."
                 )
-
-    # @commands.command(
-    #     name="setmodel",
-    #     description="Set the model used for generating responses.",
-    # )
-    # For later :)
 
     @commands.command(
         name="wipe",
@@ -97,7 +128,7 @@ class Management(commands.Cog):
 
     @commands.command(
         name="reload",
-        description="Reloads all cogs.",
+        description="Reloads all cogs and the bot instructions.",
     )
     async def reload(self, ctx):
         if ctx.author.id == self.bot.owner_id:
@@ -114,6 +145,8 @@ class Management(commands.Cog):
                             f"Failed to reload {filename}. Check logs for details."
                         )
 
+            self.bot.instructions = load_instructions()
+
             await ctx.send("Reloaded all cogs.")
 
     @commands.command(
@@ -122,10 +155,58 @@ class Management(commands.Cog):
     )
     async def restart(self, ctx):
         if ctx.author.id == self.bot.owner_id:
-            await ctx.send("Restarting bot...")
-            clear_console()
+            await ctx.message.add_reaction("✅")
+
             print("Restarting bot...")
-            os.execv(sys.executable, ["python"] + sys.argv)
+
+            if getattr(sys, "frozen", False):
+                exe_path = sys.executable
+                subprocess.Popen(exe_path)
+            else:
+                python = sys.executable
+                subprocess.Popen([python] + sys.argv)
+
+            await ctx.bot.close()
+            sys.exit(0)
+
+    @commands.command(
+        name="shutdown",
+        description="Shuts down the bot.",
+    )
+    async def shutdown(self, ctx):
+        if ctx.author.id == self.bot.owner_id:
+            await ctx.message.add_reaction("✅")
+
+            print("Shutting down bot...")
+
+            await ctx.bot.close()
+            sys.exit(0)
+
+    @commands.command(
+        name="instructions",
+        description="View or change the AI prompt.",
+        aliases=["prompt", "setprompt", "sp"],
+    )
+    async def instructions(self, ctx, *, prompt=None):
+        if ctx.author.id == self.bot.owner_id:
+            if prompt is None:
+                await ctx.send(
+                    f"Current prompt:\n{f'```{self.bot.instructions}```' if self.bot.instructions != '' else 'No prompt is currently set.'}"
+                )
+            elif prompt.lower() == "clear":
+                self.bot.instructions = ""
+
+                with open(resource_path("config/instructions.txt"), "w") as file:
+                    file.write("")
+
+                await ctx.send("Cleared prompt.")
+            else:
+                self.bot.instructions = prompt
+
+                with open(resource_path("config/instructions.txt"), "w") as file:
+                    file.write(prompt)
+
+                await ctx.send(f"Updated prompt to:\n```{prompt}```")
 
 
 async def setup(bot):

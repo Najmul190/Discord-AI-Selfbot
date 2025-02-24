@@ -1,0 +1,51 @@
+bot:
+  # Owner ID of your account (can't be same as bot's ID)
+  owner_id: 123456789012345678
+  
+  # Prefix you want bot commands to be triggered with
+  prefix: "~"
+  
+  # The word(s) you want the AI to respond to (e.g: trigger="John" or trigger="John,Jon,Jonathon")
+  trigger: "WORD_YOU_WANT_TO_TRIGGER_BOT_WITH"
+
+  # Model of the AI you'd like to use from Groq (https://console.groq.com/docs/models) (Default: llama3-70b-8192)
+  groq_model: "llama3-70b-8192"
+
+  # Model of the AI you'd like to use from OpenAI (https://platform.openai.com/docs/models#current-model-aliases) (Default: gpt-4o)
+  openai_model: "gpt-4o"
+
+  # Whether the bot should respond to DM's from people
+  allow_dm: true
+
+  # Whether the bot should be active in group chats
+  allow_gc: true
+
+  # Realistic Typing - If set to true, the bot will type for a realistic(ish) amount of time before sending a message 
+  realistic_typing: false
+
+  # Whether to wait and collect multiple messages before responding (less API usage + more realistic than replying to every message)
+  batch_messages: true 
+  
+  # How long to wait for additional messages (in seconds)
+  batch_wait_time: 10.0
+  
+  # Anti Age Ban Measures - The bot will attempt to avoid being banned by Discord by filtering out numbers below 13
+  # This is a strict method, as it removes ANY number below 13, including dates, times, etc.
+  anti_age_ban: true
+
+  # Whether the help command should be usable by everyone or just the owner
+  help_command_enabled: true
+
+  # Disable the bot from being able to mention anyone
+  # WARNING: If set to false, the bot will be able to mention @everyone and @here if it has the permissions to do so
+  disable_mentions: true
+
+  # Whether the bot should ping on replies
+  reply_ping: true
+
+notifications:
+  error_webhook: "" 
+
+  ratelimit_notifications: true
+
+# For any help or support, please join the support server: https://discord.gg/yUWmzQBV4P

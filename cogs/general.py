@@ -4,6 +4,7 @@ import asyncio
 from discord.ext import commands
 from utils.ai import generate_response
 from utils.split_response import split_response
+from utils.error_notifications import webhook_log
 
 
 class General(commands.Cog):
@@ -11,12 +12,17 @@ class General(commands.Cog):
         self.bot = bot
 
     @commands.command(name="ping")
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def ping(self, ctx):
         latency = self.bot.latency * 1000
-        await ctx.send(f"Pong! Latency: {latency:.2f} ms")
+        await ctx.send(f"Pong! Latency: {latency:.2f} ms", delete_after=30)
 
     @commands.command(name="help", description="Get all other commands!")
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def help(self, ctx):
+        if not self.bot.help_command_enabled:
+            return
+
         prefix = self.bot.command_prefix
         help_text = f"""```
 Bot Commands:
@@ -24,22 +30,25 @@ Bot Commands:
 {prefix}analyse [user] - Analyze a user's message history and provides a psychological profile
 {prefix}wipe - Clears history of the bot
 {prefix}ping - Shows the bot's latency
-{prefix}toggleactive [id] - Toggle the id of a channel or the current channel to the list of active channels
+{prefix}toggleactive [id / channel] - Toggle a mentioned channel or the current channel to the list of active channels
 {prefix}toggledm - Toggle if the bot should be active in DM's or not
 {prefix}togglegc - Toggle if the bot should be active in group chats or not
 {prefix}ignore [user] - Stop a user from using the bot
-{prefix}reload - Reloads all cogs
+{prefix}reload - Reloads all cogs and the instructions
+{prefix}prompt [prompt / clear] - View, set or clear the prompt for the AI
 {prefix}restart - Restarts the entire bot
+{prefix}shutdown - Shuts down the entire bot
 
 Created by @najmul (451627446941515817) (Discord Server: /yUWmzQBV4P)
 https://github.com/Najmul190/Discord-AI-Selfbot```
 """
-        await ctx.send(help_text)
+        await ctx.send(help_text, delete_after=30)
 
     @commands.command(
         aliases=["analyze"],
         description="Analyze a user's message history and provides a psychological profile.",
     )
+    @commands.cooldown(1, 300, commands.BucketType.user)
     async def analyse(self, ctx, user: discord.User):
         temp = await ctx.send(f"Analysing {user.name}'s message history...")
 
