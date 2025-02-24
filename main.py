@@ -22,10 +22,11 @@ from colorama import init, Fore, Style
 init()
 
 
-def check_env():
+def check_config():
     env_path = resource_path("config/.env")
-    if not os.path.exists(env_path):
-        print("config/.env not found! Running setup...")
+    config_path = resource_path("config/config.yaml")
+    if not os.path.exists(env_path) or not os.path.exists(config_path):
+        print("Config files are not setup! Running setup...")
         import utils.setup as setup
 
         setup.create_config()
@@ -52,7 +53,7 @@ if update_available:
 
     time.sleep(5)
 
-check_env()
+check_config()
 config = load_config()
 
 from utils.ai import init_ai
