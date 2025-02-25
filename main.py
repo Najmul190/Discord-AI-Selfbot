@@ -515,16 +515,9 @@ async def process_message_queue(channel_id):
             )
             history = bot.message_history[key]
 
-            if (
-                message_to_reply_to.channel.id in bot.active_channels
-                or (
-                    isinstance(message_to_reply_to.channel, discord.GroupChannel)
-                    and bot.allow_gc
-                )
-                or (
-                    isinstance(message_to_reply_to.channel, discord.DMChannel)
-                    and bot.allow_dm
-                )
+            if message_to_reply_to.channel.id in bot.active_channels or (
+                isinstance(message_to_reply_to.channel, discord.DMChannel)
+                and bot.allow_dm
             ):
                 response = await generate_response_and_reply(
                     message_to_reply_to, combined_content, history, image_url
