@@ -28,6 +28,9 @@ bot:
   
   # How long to wait for additional messages (in seconds)
   batch_wait_time: 10.0
+
+  # Whether the bot should keep replying to people, even if there's no trigger in their message
+  hold_conversation: true
   
   # Anti Age Ban Measures - The bot will attempt to avoid being banned by Discord by filtering out numbers below 13
   # This is a strict method, as it removes ANY number below 13, including dates, times, etc.

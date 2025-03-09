@@ -92,6 +92,7 @@ bot.realistic_typing = config["bot"]["realistic_typing"]
 bot.anti_age_ban = config["bot"]["anti_age_ban"]
 bot.batch_messages = config["bot"]["batch_messages"]
 bot.batch_wait_time = float(config["bot"]["batch_wait_time"])
+bot.hold_conversation = config["bot"]["hold_conversation"]
 bot.user_message_counts = {}
 bot.user_cooldowns = {}
 
@@ -200,6 +201,7 @@ def is_trigger_message(message):
     in_conversation = (
         conv_key in bot.active_conversations
         and time.time() - bot.active_conversations[conv_key] < CONVERSATION_TIMEOUT
+        and bot.hold_conversation
     )
 
     content_has_trigger = any(
@@ -314,30 +316,31 @@ async def generate_response_and_reply(message, prompt, history, image_url=None):
                                 and not m.content.startswith(PREFIX)
                             )
 
-                        while time.time() - batch_start_time <= bot.batch_wait_time:
-                            try:
-                                follow_up = await bot.wait_for(
-                                    "message",
-                                    timeout=bot.batch_wait_time
-                                    - (time.time() - batch_start_time),
-                                    check=check,
-                                )
+                        if bot.hold_conversation:
+                            while time.time() - batch_start_time <= bot.batch_wait_time:
+                                try:
+                                    follow_up = await bot.wait_for(
+                                        "message",
+                                        timeout=bot.batch_wait_time
+                                        - (time.time() - batch_start_time),
+                                        check=check,
+                                    )
 
-                                if follow_up.content.startswith(PREFIX):
-                                    await bot.process_commands(follow_up)
-                                    continue
+                                    if follow_up.content.startswith(PREFIX):
+                                        await bot.process_commands(follow_up)
+                                        continue
 
-                                if channel_id not in bot.message_queues:
-                                    bot.message_queues[channel_id] = deque()
-                                    bot.processing_locks[channel_id] = Lock()
+                                    if channel_id not in bot.message_queues:
+                                        bot.message_queues[channel_id] = deque()
+                                        bot.processing_locks[channel_id] = Lock()
 
-                                bot.message_queues[channel_id].append(follow_up)
+                                    bot.message_queues[channel_id].append(follow_up)
 
-                            except asyncio.TimeoutError:
-                                break
+                                except asyncio.TimeoutError:
+                                    break
 
                     except asyncio.TimeoutError:
-                        break
+                        pass
 
                     if (
                         bot.message_queues[channel_id]
@@ -394,7 +397,7 @@ async def on_message(message):
     is_followup = batch_key in bot.user_message_batches
     is_trigger = is_trigger_message(message)
 
-    if (is_trigger or is_followup) and not bot.paused:
+    if (is_trigger or (is_followup and bot.hold_conversation)) and not bot.paused:
         if user_id in bot.user_cooldowns:
             cooldown_end = bot.user_cooldowns[user_id]
             if current_time < cooldown_end:
