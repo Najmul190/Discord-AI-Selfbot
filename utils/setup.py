@@ -92,6 +92,7 @@ def create_config():
             == "y",
             "batch_messages": True,
             "batch_wait_time": float(10),
+            "hold_conversation": True,
             "anti_age_ban": True,
             "help_command_enabled": input(
                 "Enable help command for everyone? (y/n): "
