@@ -101,8 +101,8 @@ Windows:
 
 Linux:
 
-- Open a terminal and run `chmod +x "Discord AI Selfbot"` to make the file executable.
-- Run `./"Discord AI Selfbot"` to start the bot and follow the instructions in the console to set it up.
+- Open a terminal and run `chmod +x "Discord-AI-Selfbot"` to make the file executable.
+- Run `./"Discord-AI-Selfbot"` to start the bot and follow the instructions in the console to set it up.
 
 # 🛠️ Setting up the bot manually:
 
