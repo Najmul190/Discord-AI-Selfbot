@@ -42,7 +42,7 @@ def check_for_update():
         return None
 
 
-current_version = "v2.0.0"
+current_version = "v2.0.1"
 latest_version = check_for_update()
 update_available = latest_version and latest_version != current_version
 
