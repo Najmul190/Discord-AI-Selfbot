@@ -64,7 +64,7 @@ async def generate_response_image(prompt, instructions, image_url, history=None)
         init_ai()
     try:
         image_response = await client.chat.completions.create(
-            model="llama-3.2-90b-vision-preview",  # [ ] make sure this works when user is using openai
+            model="meta-llama/llama-4-maverick-17b-128e-instruct",  # [ ] make sure this works when user is using openai
             messages=[
                 {
                     "role": "user",
