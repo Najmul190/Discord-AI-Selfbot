@@ -139,6 +139,17 @@ def print_separator():
 
 @bot.event
 async def on_ready():
+    # check if owner_id is the default value or matches the bot's user id
+    if config["bot"]["owner_id"] == 123456789012345678:
+        print(f"{Fore.RED}Error: Please set a valid owner_id in config.yaml{Style.RESET_ALL}")
+        await bot.close()
+        sys.exit(1) # exit the program
+    
+    if config["bot"]["owner_id"] == bot.user.id:
+        print(f"{Fore.RED}Error: owner_id in config.yaml cannot be the same as the bot account's user ID{Style.RESET_ALL}")
+        await bot.close()
+        sys.exit(1) # exit the program
+
     bot.selfbot_id = bot.user.id  # this has to be here, or else it won't work
 
     clear_console()
@@ -153,15 +164,17 @@ async def on_ready():
             f"{Fore.RED}A new version of the AI Selfbot is available! Please update to {latest_version} at: \nhttps://github.com/Najmul190/Discord-AI-Selfbot/releases/latest{Style.RESET_ALL}\n"
         )
 
-    print("Active in the following channels:")
-
-    for channel_id in bot.active_channels:
-        channel = bot.get_channel(channel_id)
-        if channel:
-            try:
-                print(f"- #{channel.name} in {channel.guild.name}")
-            except Exception:
-                pass
+    if len(bot.active_channels) > 0:
+        print("Active in the following channels:")
+        for channel_id in bot.active_channels:
+            channel = bot.get_channel(channel_id)
+            if channel:
+                try:
+                    print(f"- #{channel.name} in {channel.guild.name}")
+                except Exception:
+                    pass
+    else:
+        print(f"Bot is currently not active in any channel, use {PREFIX}toggleactive command to activate it in a channel.")
 
     print(
         f"\n{Fore.LIGHTBLACK_EX}Join the Discord server for support and news on updates: https://discord.gg/yUWmzQBV4P{Style.RESET_ALL}"
