@@ -9,7 +9,7 @@ bot:
   trigger: "WORD_YOU_WANT_TO_TRIGGER_BOT_WITH"
 
   # Model of the AI you'd like to use from Groq (https://console.groq.com/docs/models) (Default: llama3-70b-8192)
-  groq_model: "llama3-70b-8192"
+  groq_model: "llama-3.3-70b-versatile"
 
   # Model of the AI you'd like to use from OpenAI (https://platform.openai.com/docs/models#current-model-aliases) (Default: gpt-4o)
   openai_model: "gpt-4o"
