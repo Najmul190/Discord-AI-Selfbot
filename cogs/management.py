@@ -13,6 +13,7 @@ from utils.db import (
     remove_ignored_user,
     remove_channel,
     add_channel,
+    cl_a,
 )
 
 
@@ -124,8 +125,12 @@ class Management(commands.Cog):
     )
     async def wipe(self, ctx):
         if ctx.author.id == self.bot.owner_id:
-            self.bot.message_history.clear()
-            await ctx.send("Wiped the bot's memory.")
+            if self.bot.storage_mode == "memory":
+                self.bot.message_history.clear()
+                await ctx.send("Wiped the bot's memory.")
+            elif self.bot.storage_mode == "database":
+                cl_a()
+                await ctx.send("wiped db history")
 
     @commands.command(
         name="reload",

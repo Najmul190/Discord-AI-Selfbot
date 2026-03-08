@@ -15,7 +15,7 @@ from utils.helpers import (
     load_instructions,
     load_config,
 )
-from utils.db import init_db, get_channels, get_ignored_users
+from utils.db import init_db, get_channels, get_ignored_users, sv_c, gt_c, ck_d
 from utils.error_notifications import webhook_log
 from colorama import init, Fore, Style
 
@@ -95,6 +95,7 @@ bot.batch_wait_time = float(config["bot"]["batch_wait_time"])
 bot.hold_conversation = config["bot"]["hold_conversation"]
 bot.user_message_counts = {}
 bot.user_cooldowns = {}
+bot.storage_mode = config["bot"]["storage_mode"]
 
 bot.instructions = load_instructions()
 
@@ -109,7 +110,7 @@ SPAM_MESSAGE_THRESHOLD = 5
 SPAM_TIME_WINDOW = 10.0
 COOLDOWN_DURATION = 60.0
 
-MAX_HISTORY = 15
+MAX_HISTORY = config["bot"]["max_history"]
 
 
 def get_terminal_size():
@@ -158,6 +159,12 @@ async def on_ready():
     print(
         f"AI Selfbot successfully logged in as {Fore.CYAN}{bot.user.name} ({bot.selfbot_id}){Style.RESET_ALL}.\n"
     )
+    
+    if MAX_HISTORY > 15:
+        print(
+            f"{Fore.YELLOW}warning: max_history is set to {MAX_HISTORY}, you may need a good ai model which can handle long contexts perfectly. small or default models may not perform well{Style.RESET_ALL}"
+        )
+
 
     if update_available:
         print(
@@ -242,11 +249,15 @@ def is_trigger_message(message):
     )
 
 
-def update_message_history(author_id, message_content):
-    if author_id not in bot.message_history:
-        bot.message_history[author_id] = []
-    bot.message_history[author_id].append(message_content)
-    bot.message_history[author_id] = bot.message_history[author_id][-MAX_HISTORY:]
+def update_message_history(author_id, channel_id, role, content):
+    if bot.storage_mode == "memory":
+        key = f"{author_id}-{channel_id}"
+        if key not in bot.message_history:
+            bot.message_history[key] = []
+        bot.message_history[key].append({"role": role, "content": content})
+        bot.message_history[key] = bot.message_history[key][-MAX_HISTORY:]
+    elif bot.storage_mode == "database":
+        sv_c(author_id, channel_id, role, content)
 
 
 async def generate_response_and_reply(message, prompt, history, image_url=None):
@@ -522,14 +533,16 @@ async def process_message_queue(channel_id):
                     f"<@{mention.id}>", f"@{mention.display_name}"
                 )
 
-            key = f"{message_to_reply_to.author.id}-{message_to_reply_to.channel.id}"
-            if key not in bot.message_history:
-                bot.message_history[key] = []
-
-            bot.message_history[key].append(
-                {"role": "user", "content": combined_content}
-            )
-            history = bot.message_history[key]
+            if bot.storage_mode == "memory":
+                key = f"{message_to_reply_to.author.id}-{message_to_reply_to.channel.id}"
+                if key not in bot.message_history:
+                    bot.message_history[key] = []
+                bot.message_history[key].append({"role": "user", "content": combined_content})
+                history = bot.message_history[key][-MAX_HISTORY:]
+            elif bot.storage_mode == "database":
+                if not ck_d(message_to_reply_to.author.id, message_to_reply_to.channel.id, combined_content):
+                    sv_c(message_to_reply_to.author.id, message_to_reply_to.channel.id, "user", combined_content)
+                history = gt_c(message_to_reply_to.author.id, message_to_reply_to.channel.id, MAX_HISTORY)
 
             if message_to_reply_to.channel.id in bot.active_channels or (
                 isinstance(message_to_reply_to.channel, discord.DMChannel)
@@ -538,9 +551,11 @@ async def process_message_queue(channel_id):
                 response = await generate_response_and_reply(
                     message_to_reply_to, combined_content, history, image_url
                 )
-                bot.message_history[key].append(
-                    {"role": "assistant", "content": response}
-                )
+                
+                if bot.storage_mode == "memory":
+                    bot.message_history[key].append({"role": "assistant", "content": response})
+                elif bot.storage_mode == "database":
+                    sv_c(message_to_reply_to.author.id, message_to_reply_to.channel.id, "assistant", response)
 
 
 async def load_extensions():

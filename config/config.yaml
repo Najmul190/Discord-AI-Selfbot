@@ -46,6 +46,12 @@ bot:
   # Whether the bot should ping on replies
   reply_ping: true
 
+  # maximum conversation history to keep (recommended: 5-15 for better performance)
+  max_history: 15
+
+  # conversation storage mode: 'memory' (fast, temporary) or 'database' (persistent, little bit slower)
+  storage_mode: "memory"
+
 notifications:
   error_webhook: "" 
 
